@@ -18,9 +18,5 @@ def matt():
 # POST
 @app.route('/user_login', methods=['POST', 'GET'])
 def user_login():
-    method = request.method
-    if method == 'POST':
-        username = request.form['username']
-        return f"Welcome {username}, you got here via a {method} request."
-    else:
-        return f"You got here via a {method} request, unnamed one."
+    if request.method == 'POST':
+        return f"Welcome {request.form['username']}, you got here via a POST request."
