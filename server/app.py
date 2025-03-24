@@ -1,21 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask
+from admin.routes import admin
 
 app = Flask(__name__)
 
-@app.route('/')
-def main_page():
-    return render_template('user.html')
-
-# GET
-@app.route('/chris')
-def chris():
-    return 'This is a page for Chris'
-
-@app.route('/matt')
-def matt():
-    return 'This is a page for Matt'
-
-# POST
-@app.route('/user_login', methods=['POST'])
-def user_login():
-    return f"Welcome {request.form['username']}, you got here via a POST request."
+app.register_blueprint(admin)
