@@ -10,7 +10,7 @@ class Player:
     """
 
     # dict used to parse the value of the card strings
-    #TODO: handle aces - high/low?
+    
     card_value_dict = {
         "2": 2,
         "3": 3,
@@ -40,10 +40,26 @@ class Player:
 
     def hand_value(self) -> int:
         """
-        returns the int value of the current hand
+        Returns the int value of the current hand
         """
-        _value = 0
+        _total_value = 0
         for card in self.hand:
-            _value += self.card_value_dict[card[1:]]
+            _value = card[1:]
+            if _value == "A":
+                # handle aces high or low
+                _total_value += self.ace_value(_total_value)
+            else:
+                # fixed value from card value dict
+                _total_value += self.card_value_dict[_value]
 
-        return _value
+        return _total_value
+    
+    def ace_value(self, current_hand_value: int) -> int:
+        """
+        Determines whether an ace should be high or low based
+        on the current value of the hand (current_hand_value)
+        """
+        if current_hand_value + 11 > 21:
+            return 1
+        else:
+            return 11
