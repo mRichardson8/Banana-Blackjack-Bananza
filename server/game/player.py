@@ -32,8 +32,8 @@ class Player:
     
     def draw_card(self, card: str):
         """
-        Draw a card from the deck, card format is <suit><value>
-        e.g. SA = Ace of Spades, H8 = Eight of Hearts
+        Draw a card from the deck, card format is <value><suit>
+        e.g. XS = Ace of Spades, 8H = Eight of Hearts
         Add card to hand and increment hand value
         """
         self.hand += [card]

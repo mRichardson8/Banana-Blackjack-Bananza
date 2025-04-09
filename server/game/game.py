@@ -6,71 +6,71 @@ from game.player import Player
 import random
 
 """
-new_deck represents a standard 52-card deck the format is <suit><value>:
+new_deck represents a standard 52-card deck the format is <value><suit>:
 SUITS:
 C = Clubs
 D = Diamonds
 H = Hearts
 S = Spades
 VALUES:
-A = Ace
+X = Ace (X represents Ace for the purposes of sorting in Player.hand_value())
 J = Jack
 Q = Queen
-    K = King
+K = King
 """
 NEW_DECK = {
-    "CA",
-    "DA",
-    "HA",
-    "SA",
-    "C2",
-    "D2",
-    "H2",
-    "S2",
-    "C3",
-    "D3",
-    "H3",
-    "S3",
-    "C4",
-    "D4",
-    "H4",
-    "S4",
-    "C5",
-    "D5",
-    "H5",
-    "S5",
-    "C6",
-    "D6",
-    "H6",
-    "S6",
-    "C7",
-    "D7",
-    "H7",
-    "S7",
-    "C8",
-    "D8",
-    "H8",
-    "S8",
-    "C9",
-    "D9",
-    "H9",
-    "S9",
-    "C10",
-    "D10",
-    "H10",
-    "S10",
-    "CJ",
-    "DJ",
-    "HJ",
-    "SJ",
-    "CQ",
-    "DQ",
-    "HQ",
-    "SQ",
-    "CK",
-    "DK",
-    "HK",
-    "SK"
+    "XC",
+    "XD",
+    "XH",
+    "XS",
+    "2C",
+    "2D",
+    "2H",
+    "2S",
+    "3C",
+    "3D",
+    "3H",
+    "3S",
+    "4C",
+    "4D",
+    "4H",
+    "4S",
+    "5C",
+    "5D",
+    "5H",
+    "5S",
+    "6C",
+    "6D",
+    "6H",
+    "6S",
+    "7C",
+    "7D",
+    "7H",
+    "7S",
+    "8C",
+    "8D",
+    "8H",
+    "8S",
+    "9C",
+    "9D",
+    "9H",
+    "9S",
+    "10C",
+    "10D",
+    "10H",
+    "10S",
+    "JC",
+    "JD",
+    "JH",
+    "JS",
+    "QC",
+    "QD",
+    "QH",
+    "QS",
+    "KC",
+    "KD",
+    "KH",
+    "KS"
 }
 
 class Game:
