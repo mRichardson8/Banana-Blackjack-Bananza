@@ -2,22 +2,22 @@
 Module for the Game class
 """
 
-from game.player import Player
 import random
+from game.player import Player
 
-"""
-new_deck represents a standard 52-card deck the format is <value><suit>:
-SUITS:
-C = Clubs
-D = Diamonds
-H = Hearts
-S = Spades
-VALUES:
-X = Ace (X represents Ace for the purposes of sorting in Player.hand_value())
-J = Jack
-Q = Queen
-K = King
-"""
+
+# new_deck represents a standard 52-card deck the format is <value><suit>:
+# SUITS:
+# C = Clubs
+# D = Diamonds
+# H = Hearts
+# S = Spades
+# VALUES:
+# X = Ace (X represents Ace for the purposes of sorting in Player.hand_value())
+# J = Jack
+# Q = Queen
+# K = King
+
 NEW_DECK = {
     "XC",
     "XD",
@@ -70,8 +70,9 @@ NEW_DECK = {
     "KC",
     "KD",
     "KH",
-    "KS"
+    "KS",
 }
+
 
 class Game:
     """
@@ -80,18 +81,18 @@ class Game:
     """
 
     def __init__(self, name="Player"):
-        self.name = name # input username for session
+        self.name = name  # input username for session
         self.bananas = 100
-        self.player = Player(name) # user controller
-        self.dealer = Player("Dealer") # computer controller
-        self.deck = NEW_DECK # initialise unshuffled deck
-    
+        self.player = Player(name)  # user controller
+        self.dealer = Player("Dealer")  # computer controller
+        self.deck = NEW_DECK  # initialise unshuffled deck
+
     def shuffle_deck(self):
         """
         shuffle game.deck into a random order
         """
         random.shuffle(self.deck)
-    
+
     def deal_card(self, player: Player):
         """
         deal a card from the deck to the specified Player objects hand
