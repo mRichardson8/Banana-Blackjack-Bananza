@@ -81,7 +81,6 @@ class Game:
     """
 
     def __init__(self, name="Player"):
-        self.name = name  # input username for session
         self.bananas = 100
         self.player = Player(name)  # user controller
         self.dealer = Player("Dealer")  # computer controller
@@ -89,13 +88,37 @@ class Game:
 
     def shuffle_deck(self):
         """
-        shuffle game.deck into a random order
+        Shuffle game.deck into a random order
         """
         random.shuffle(self.deck)
 
     def deal_card(self, player: Player):
         """
-        deal a card from the deck to the specified Player objects hand
+        Deal a card from the deck to the specified Player objects hand
         removes the card from game.deck
         """
         player.draw_card(self.deck.pop())
+    
+    def twist(self, player: Player) -> int:
+        """
+        Request another card for the specified Player object
+        Returns the value of the hand including the new card
+        """
+        self.deal_card(player)
+        if player.hand_value() > 21:
+            # fail state
+            self.bust(player)
+    
+    def stick(self, player: Player):
+        """
+        Choose not to draw another card
+        """
+        # the below is a placeholder, obviously :)
+        print(f"Sticking at {player.hand_value()}. I'm fine right here, muchacho.")
+
+    def bust(self, player: Player):
+        """
+        Logic for when a player has a hand value of over 21
+        """
+        # placeholder
+        print(f"Player {player.name} is out of bananas.")
