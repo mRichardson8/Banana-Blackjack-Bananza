@@ -98,8 +98,8 @@ class Game:
         removes the card from game.deck
         """
         player.draw_card(self.deck.pop())
-    
-    def twist(self, player: Player) -> int:
+
+    def twist(self, player: Player):
         """
         Request another card for the specified Player object
         Returns the value of the hand including the new card
@@ -108,7 +108,7 @@ class Game:
         if player.hand_value() > 21:
             # fail state
             self.bust(player)
-    
+
     def stick(self, player: Player):
         """
         Choose not to draw another card
