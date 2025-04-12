@@ -1,0 +1,17 @@
+/* Styles for the Footer layout component */
+footer{
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  bottom: 0;
+  position: absolute;
+  border-top: 1px solid grey;
+  text-align: center;
+  height: 10%;
+
+  .logo {
+    height: 6em;
+    will-change: filter;
+}
+}
+

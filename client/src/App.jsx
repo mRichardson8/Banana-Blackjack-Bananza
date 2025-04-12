@@ -4,6 +4,8 @@ import './App.css'
 import bonanzaLogo from './assets/bonanza-logo.jpg'
 import { LinkContainer } from './components'
 import bananaLogo from '/bananaSVG.svg'
+import { BrowserRouter, Routes, Route } from 'react-router'
+import LandingPage from './pages/LandingPage/LandingPage'
 
 function App() {
   const links = useMemo(() => {
@@ -16,11 +18,11 @@ function App() {
 
   return (
     <>
-      <LinkContainer links={links}/>
-      <h1>🍌 Banana Blackjack Bananza 🍌</h1>
-      <p className="read-the-docs">
-        Click on the logos to learn important life lessons
-      </p>
+      <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<LandingPage />} />
+      </Routes>
+      </BrowserRouter>
     </>
   )
 }
