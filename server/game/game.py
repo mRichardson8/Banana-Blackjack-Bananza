@@ -3,7 +3,7 @@ Module for the Game class
 """
 
 import random
-from game.player import Player
+from player import Player
 
 
 # new_deck represents a standard 52-card deck the format is <value><suit>:
@@ -18,7 +18,7 @@ from game.player import Player
 # Q = Queen
 # K = King
 
-NEW_DECK = {
+NEW_DECK = [
     "XC",
     "XD",
     "XH",
@@ -71,7 +71,7 @@ NEW_DECK = {
     "KD",
     "KH",
     "KS",
-}
+]
 
 
 class Game:
@@ -84,7 +84,14 @@ class Game:
         self.bananas = 100
         self.player = Player(name)  # user controller
         self.dealer = Player("Dealer")  # computer controller
-        self.deck = NEW_DECK  # initialise unshuffled deck
+        self.deck = NEW_DECK.copy()  # initialise unshuffled deck
+
+    def reset_deck(self):
+        """
+        Play a little game of 52-card pickup and get the deck back
+        into a complete and unshuffled state
+        """
+        self.deck = NEW_DECK.copy()
 
     def shuffle_deck(self):
         """
