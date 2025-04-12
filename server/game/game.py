@@ -40,7 +40,7 @@ class Game:
         Returns the value of the hand including the new card
         """
         self.deal_card(player)
-        if player.hand_value() > 21:
+        if player.hand_value > 21:
             # fail state
             self.bust(player)
 
@@ -49,7 +49,7 @@ class Game:
         Choose not to draw another card
         """
         # the below is a placeholder, obviously :)
-        print(f"Sticking at {player.hand_value()}. I'm fine right here, muchacho.")
+        print(f"Sticking at {player.hand_value}. I'm fine right here, muchacho.")
 
     def bust(self, player: Player):
         """
