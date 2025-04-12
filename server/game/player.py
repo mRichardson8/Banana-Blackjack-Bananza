@@ -45,7 +45,6 @@ class Player:
         """
         if value in ["J", "Q", "K"]:
             return 10
-        elif value == "X":
+        if value == "X":
             return 1 if running_value + 11 > 21 else 11
-        else:
-            return int(value)
+        return int(value)

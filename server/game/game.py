@@ -3,8 +3,9 @@ Module for the Game class
 """
 
 import random
-from player import Player
-from constants import NEW_DECK
+from game.player import Player
+from game.constants import NEW_DECK
+
 
 class Game:
     """
