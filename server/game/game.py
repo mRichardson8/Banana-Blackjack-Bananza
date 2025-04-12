@@ -27,29 +27,15 @@ class Game:
         # shuffle the deck
         random.shuffle(self.deck)
 
-    def deal_card(self, player: Player):
-        """
-        Deal a card from the deck to the specified Player objects hand
-        removes the card from game.deck
-        """
-        player.draw_card(self.deck.pop())
-
     def twist(self, player: Player):
         """
         Request another card for the specified Player object
-        Returns the value of the hand including the new card
+        Initiates bust() if player.hand_value is greater than 21
         """
-        self.deal_card(player)
+        player.draw_card(self.deck.pop())
         if player.hand_value > 21:
             # fail state
             self.bust(player)
-
-    def stick(self, player: Player):
-        """
-        Choose not to draw another card
-        """
-        # the below is a placeholder, obviously :)
-        print(f"Sticking at {player.hand_value}. I'm fine right here, muchacho.")
 
     def bust(self, player: Player):
         """
