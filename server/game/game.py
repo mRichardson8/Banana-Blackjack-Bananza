@@ -20,15 +20,11 @@ class Game:
 
     def reset_deck(self):
         """
-        Play a little game of 52-card pickup and get the deck back
-        into a complete and unshuffled state
+        Play a little game of 52-card pickup and shuffle the complete deck
         """
+        # take a copy so NEW_DECK is preserved
         self.deck = NEW_DECK.copy()
-
-    def shuffle_deck(self):
-        """
-        Shuffle game.deck into a random order
-        """
+        # shuffle the deck
         random.shuffle(self.deck)
 
     def deal_card(self, player: Player):
