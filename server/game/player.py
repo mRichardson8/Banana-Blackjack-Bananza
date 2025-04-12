@@ -12,7 +12,7 @@ class Player:
 
     def __init__(self, name: str):
         self.name = name
-        self.hand = ""
+        self.hand = []
 
     def draw_card(self, card: str):
         """
@@ -26,21 +26,21 @@ class Player:
         """
         Returns the int value of the current hand
         """
-        _total_value = 0
+        total_value = 0
         # create local copy of hand to preserve order of cards
-        _hand = self.hand
+        sorted_hand = self.hand.copy()
         # sort local hand so aces are at the end
-        _hand.sort()
-        for _card in self.hand:
-            _value = _card[:-1]
-            if _value == "X":
+        sorted_hand.sort()
+        for card in sorted_hand:
+            value = card[:-1]
+            if value == "X":
                 # dynamic ace value
-                _total_value += self.ace_value(_total_value)
+                total_value += self.ace_value(total_value)
             else:
                 # static card values
-                _total_value += self.card_value(_value)
+                total_value += self.card_value(value)
 
-        return _total_value
+        return total_value
 
     def card_value(self, value: str) -> int:
         """
@@ -51,7 +51,7 @@ class Player:
             return 10
         try:
             return int(value)
-        except TypeError:
+        except ValueError:
             # should never be passed a non numerical string at this point
             # but better safe than sorry!
             # TODO: add logging/error handling here
