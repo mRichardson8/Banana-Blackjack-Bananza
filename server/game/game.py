@@ -3,8 +3,8 @@ Module for the Game class
 """
 
 import random
-from game.player import Player
-from game.constants import NEW_DECK
+from player import Player
+from constants import NEW_DECK
 
 
 class Game:
@@ -17,7 +17,7 @@ class Game:
         self.bananas = 100
         self.player = Player(name)  # user controller
         self.dealer = Player("Dealer")  # computer controller
-        self.deck = NEW_DECK.copy()  # initialise unshuffled deck
+        self.reset_deck()
 
     def reset_deck(self):
         """
@@ -25,7 +25,6 @@ class Game:
         """
         # take a copy so NEW_DECK is preserved
         self.deck = NEW_DECK.copy()
-        # shuffle the deck
         random.shuffle(self.deck)
 
     def twist(self, player: Player):
