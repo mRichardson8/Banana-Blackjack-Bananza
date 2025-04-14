@@ -34,7 +34,6 @@ class Player:
         sorted_hand.sort()
         for card in sorted_hand:
             total_value += self.card_value(card[:-1], total_value)
-
         return total_value
 
     def card_value(self, value: str, running_value: int) -> int:
