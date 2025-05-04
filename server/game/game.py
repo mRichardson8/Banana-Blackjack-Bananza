@@ -3,6 +3,7 @@ Module for the Game class
 """
 
 import random
+import secrets
 from constants import NEW_DECK
 from player import Player
 
@@ -14,6 +15,7 @@ class Game:
     """
 
     def __init__(self, name="Player"):
+        self.game_id = secrets.token_urlsafe(6)
         self.bananas = 100
         self.player = Player(name)  # user controller
         self.dealer = Player("Dealer")  # computer controller
