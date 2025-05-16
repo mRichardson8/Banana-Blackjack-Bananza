@@ -30,15 +30,14 @@ class Game:
         self.deck = NEW_DECK.copy()
         random.shuffle(self.deck)
 
-    def twist(self, player: Player):
+    def twist(self, player: Player) -> str:
         """
         Request another card for the specified Player object
         Initiates bust() if player.hand_value is greater than 21
         """
-        player.draw_card(self.deck.pop())
-        if player.hand_value > 21:
-            # fail state
-            self.bust(player)
+        card = self.deck.pop()
+        player.draw_card(card)
+        return card
 
     def bust(self, player: Player):
         """
