@@ -4,8 +4,8 @@ Module for the Game class
 
 import random
 import secrets
-from constants import NEW_DECK
-from player import Player
+from game.constants import NEW_DECK
+from game.player import Player
 
 
 class Game:
@@ -19,7 +19,7 @@ class Game:
         self.bananas = 100
         self.player = Player(name)  # user controller
         self.dealer = Player("Dealer")  # computer controller
-        self.deck = [] # deck of 52 cards
+        self.deck = []  # deck of 52 cards
         self.reset_deck()
 
     def reset_deck(self):
