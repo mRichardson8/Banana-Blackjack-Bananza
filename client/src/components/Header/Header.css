@@ -23,6 +23,7 @@ div.header{
       display:flex;
       flex-flow: row nowrap;
       align-items: center;
+      cursor:pointer;
 
       .brand-text {
         filter: drop-shadow(1px 1px 1px yellow);
