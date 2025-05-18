@@ -1,52 +1,51 @@
-div.card-outer{
-    position: relative;
-    width:50px;
-    height:100px;
-    display:flex;
-    transition: all 0.2s;
-    transform-origin: center;
-    
-    &:hover{
-        transform: scale(1.2);
-        padding: 0 10px;
-    }
+div.card-outer {
+  position: relative;
+  width: 50px;
+  height: 100px;
+  display: flex;
+  transition: all 0.2s;
+  transform-origin: center;
+
+  &:hover {
+    transform: scale(1.2);
+    padding: 0 10px;
+  }
 }
 
-
-div.card-inner{
-    position: relative;
-    text-align: center;
-    transition: all 1s;
-    transform-style: preserve-3d;
-    height:100%;
-    width:100%;
-    display:flex;
-
+div.card-inner {
+  position: relative;
+  text-align: center;
+  transition: all 1s;
+  transform-style: preserve-3d;
+  height: 100%;
+  width: 100%;
+  display: flex;
 }
 
-div.card-outer > *, div.card-inner > * {
-    height: 100%;
-    width: 100%;
+div.card-outer > *,
+div.card-inner > * {
+  height: 100%;
+  width: 100%;
 }
 
 /* .card-outer:hover .card-inner {
     transform: rotateY(180deg);
 } */
-  
-.card-front, .card-back {
-    position: absolute;
-    -webkit-backface-visibility: hidden; /* Safari */
-    backface-visibility: hidden;
-    display:flex;
-    justify-content: center;
-    width: 50px;
-    > * {
-        height:100%;
-        width:auto;
-    }
+
+.card-front,
+.card-back {
+  position: absolute;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  width: 50px;
+  > * {
+    height: 100%;
+    width: auto;
+  }
 }
 
-
 .card-back {
-    transform: rotateY(180deg);
+  transform: rotateY(180deg);
 }

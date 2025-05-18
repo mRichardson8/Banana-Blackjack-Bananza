@@ -1,5 +1,5 @@
 /* Styles for the Footer layout component */
-footer{
+footer {
   display: flex;
   flex-flow: column nowrap;
   width: 100%;
@@ -12,6 +12,5 @@ footer{
   .logo {
     height: 6em;
     will-change: filter;
+  }
 }
-}
-

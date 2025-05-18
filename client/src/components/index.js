@@ -1,1 +1,1 @@
-export {default as LinkContainer} from './LinkContainer/LinkContainer.jsx'
+export { default as LinkContainer } from "./LinkContainer/LinkContainer.jsx";

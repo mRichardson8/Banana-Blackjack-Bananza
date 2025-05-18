@@ -1,46 +1,44 @@
 /* Styles for the Header layout component */
-div.header{
+div.header {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  width: 100%;
+  top: 0;
+  position: relative;
+  border-bottom: 1px solid grey;
+  height: 15%;
+  padding: 0 2rem;
+  box-sizing: border-box;
+
+  .logo {
+    will-change: filter;
+    padding: 1rem;
+    display: block;
+    width: 60px;
+    height: 60px;
+  }
+
+  .brand-name {
     display: flex;
     flex-flow: row nowrap;
-    justify-content: space-between;
-    width: 100%;
-    top: 0;
-    position: relative;
-    border-bottom: 1px solid grey;
-    height:15%;
-    padding: 0 2rem;
-    box-sizing: border-box;
+    align-items: center;
+    cursor: pointer;
 
-    .logo {
-      will-change: filter;
-      padding: 1rem;
-      display: block;
-      width: 60px;
-      height: 60px;
+    .brand-text {
+      filter: drop-shadow(1px 1px 1px yellow);
     }
+  }
 
-    .brand-name{
-      display:flex;
-      flex-flow: row nowrap;
-      align-items: center;
-      cursor:pointer;
+  .link-container {
+    display: flex;
+    flex-flow: row nowrap;
+    min-width: 30%;
+    justify-content: space-evenly;
 
-      .brand-text {
-        filter: drop-shadow(1px 1px 1px yellow);
-      }
-
-    }
-
-    .link-container{
+    > * {
       display: flex;
-      flex-flow: row nowrap;
-      min-width: 30%;
-      justify-content: space-evenly;
-
-      > * {
-        display: flex;
-        align-items: center;
-      }
+      align-items: center;
     }
+  }
 }
-
