@@ -45,3 +45,18 @@ class Game:
         """
         # placeholder
         print(f"Player {player.name} is out of bananas.")
+
+    def dealer_turn(self) -> str:
+        """
+        Play out the dealers turn when the player has stuck
+        Returns status string
+        """
+        player_val = self.player.hand_value
+        while self.dealer.hand_value < player_val:
+            self.twist(self.dealer)
+        dealer_val = self.dealer.hand_value
+        if dealer_val > player_val:
+            if dealer_val > 21:
+                return "Bust"
+            return "Win"
+        return "Draw"
