@@ -6,19 +6,55 @@ import React, { useEffect, useState } from "react";
 import cardBack from "../../assets/cardback.png";
 import Card from "../../components/Card/Card";
 import Layout from "../../components/Layout/Layout";
-import { playerAction, startGame } from "./apiEndpoints";
+// import { playerAction, startGame } from "./apiEndpoints";
+import { mockPlayerAction as playerAction, mockStartGame as startGame } from "./apiEndpoints"; // Mock the api for now
 import "./Game.css";
 
 const Game = () => {
   const [gameID, setGameID] = useState("");
-  const [gameState, setGameState] = useState(null);
-  const [playerHand, setPlayerHand] = useState([]);
-  const [dealerHand, setDealerHand] = useState([]);
+  const [gameState, setGameState] = useState("");
+  const [playerHand, setPlayerHand] = useState({
+    cards: [],
+    value: 0
+  });
+  const [dealerHand, setDealerHand] = useState({
+    cards: [],
+    value: 0
+  });
   const [handValue, setHandValue] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false)
+  const [modalType, setModalType] = useState("")
 
-  const addCard = () => {
-    setPlayerHand([...playerHand, "H2"]);
+
+  const playerHit = async () => {
+    const {gameState, newCard} = await playerAction("hit", gameID)
+    console.log(`new card is ${newCard}`);
+    addCard(newCard)
+    setGameState(gameState)
+  }
+
+  const playerStand = async () => {
+    const {gameState, dealerHand} = await playerAction("stand", gameID)
+    console.log("logging returns")
+    console.log(gameState);
+    console.log(dealerHand);
+    // TODO this should be done as an animation one card at a time
+    setDealerHand(dealerHand);
+    if (gameState === 'draw'){
+      displayDraw()
+    }
+    if (gameState === 'lose'){
+      displayLoss()
+    }
+    if (gameState === 'win'){
+      displayWin()
+    }
+  }
+
+  const addCard = (newCard) => {
+    // TODO add animation logic for the new card
+    setPlayerHand({cards: [...playerHand.cards, newCard], value: playerHand.value + 1});
   };
 
   const emptyHand = () => {
@@ -26,26 +62,51 @@ const Game = () => {
   };
 
   // Mock some values idk
-  // TODO remove this
   useEffect(() => {
-    setPlayerHand(["S5", "D7"]);
-    setDealerHand(["?", "?"]);
+    setPlayerHand({cards: ["S5", "D7"], value: 17});
+    setDealerHand({cards: ["?", "?"], value: '?'});
   }, []);
 
   // On page load, one time get data
   useEffect(() => {
     const onPageLoad = async () => {
       const { newGameID } = startGame();
-      console.log("setting game id from json");
       setGameID(newGameID);
     };
     onPageLoad();
     setLoading(false);
   }, []);
 
+  const displayWin = () => {
+    // set anim, banana shaped confetti
+    setShowModal(true)
+    setModalType("win");
+  }
+
+  const displayDraw = () => {
+    // set anim something funny idk
+    setShowModal(true)
+    setModalType("draw");
+  }
+
+  const displayLoss = () => {
+    // set anim banana turning to dust fragmenting? 
+    setShowModal(true);
+    setModalType("lose");
+  }
+
   return (
     <Layout>
       <div id="game-page">
+        {showModal && 
+        <div className="results-modal" onClick={() => setShowModal(false)}>
+          <div className="inner-modal" onClick={(e) => e.stopPropagation()}>
+          {modalType === 'win' && <>You win</>}
+          {modalType === 'lose' && <>You lose</>}
+          {modalType === 'draw' && <>Your chungus ass drew</>}
+          </div>
+        </div>
+        }
         {loading ? (
           <div className="loading-screen">
             <p>We're loading y'all</p>
@@ -62,7 +123,7 @@ const Game = () => {
                 />
               </div>
               <div className="dealer-hand">
-                {dealerHand.map((card, index) => {
+                {dealerHand.cards?.map((card, index) => {
                   return (
                     <Card key={`card-${index}`} value={card} width={"300px"} />
                   );
@@ -85,7 +146,7 @@ const Game = () => {
               </div>
               <div className="player-hand-container">
                 <div className="player-hand">
-                  {playerHand.map((card, index) => {
+                  {playerHand.cards?.map((card, index) => {
                     return (
                       <Card
                         key={`card-${index}`}
@@ -98,8 +159,8 @@ const Game = () => {
                 <p>Hand value: {handValue}</p>
               </div>
               <div className="player-actions">
-                <button onClick={addCard}>Hit</button>
-                <button onClick={emptyHand}>Twist</button>
+                <button onClick={playerHit}>Hit</button>
+                <button onClick={playerStand}>Stand</button>
               </div>
             </section>
           </>

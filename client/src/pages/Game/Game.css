@@ -65,6 +65,31 @@
       color: black;
     }
   }
+
+  .results-modal{
+    width: 100vw;
+    height: 100vh;
+    background-color: #BBBBBB55;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+  }
+
+  .inner-modal{
+    width: 30%;
+    height: 30%;
+    position: absolute;
+    top: 35%;
+    left: 35%;
+    background-color: green;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .loading-screen {
