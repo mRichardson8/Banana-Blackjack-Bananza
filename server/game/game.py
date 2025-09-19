@@ -21,6 +21,16 @@ class Game:
         self.dealer = Player("Dealer")  # computer controller
         self.deck = []  # deck of 52 cards
         self.reset_deck()
+        # starting cards for players
+        self.twist(self.player)
+        self.twist(self.player)
+        self.twist(self.dealer)
+        self.twist(self.dealer)
+
+    def __str__(self):
+        player = f"{self.player.name}: {self.player.hand_value}, "
+        dealer = f"{self.dealer.name}: {self.dealer.hand_value}"
+        return player + dealer
 
     def reset_deck(self):
         """
