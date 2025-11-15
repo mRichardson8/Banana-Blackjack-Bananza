@@ -47,14 +47,9 @@ class Game:
         """
         card = self.deck.pop()
         player.draw_card(card)
+        if player.hand_value > 21:
+            return f"Player {player.name} drew {card} and has gone bust."
         return card
-
-    def bust(self, player: Player):
-        """
-        Logic for when a player has a hand value of over 21
-        """
-        # placeholder
-        print(f"Player {player.name} is out of bananas.")
 
     def dealer_turn(self) -> str:
         """
