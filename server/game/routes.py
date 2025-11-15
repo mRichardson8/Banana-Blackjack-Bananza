@@ -2,14 +2,11 @@
 endpoints and behaviour for the game module
 """
 
-import secrets
 from flask import Blueprint, request, session
 import jsonpickle
 from game.game import Game
 
 game = Blueprint("game", __name__, url_prefix="/")
-
-game.secret_key = secrets.token_hex()
 
 
 @game.route("/start", methods=["POST"])
@@ -18,9 +15,10 @@ def game_start():
     instantiate game object when new game is launched
     """
     # instantiate game object
-    game_instance = Game(request.playerName)
+    game_instance = Game(request.json["playerName"])
     # for mvp session handles game object persistance
     session["game"] = jsonpickle.encode(game_instance)
+    return game_instance.game_id
 
 
 @game.route("/player-action", methods=["POST"])
