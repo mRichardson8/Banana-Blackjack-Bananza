@@ -28,8 +28,9 @@ def player_action():
     """
     # get game object stored in session
     game_instance = jsonpickle.decode(session.get("game"))
-    if request.playerAction == "twist":
+    if request.json["playerAction"] == "Twist":
         new_card = game_instance.twist(game_instance.player)
+        state = "player_bust" if len(new_card) > 2 else "player_twist"
         session["game"] = jsonpickle.encode(game_instance)
         return {
             "newCard": new_card,
@@ -37,7 +38,7 @@ def player_action():
                 "cards": game_instance.player.hand,
                 "value": game_instance.player.hand_value,
             },
-            "gameState": "Twist",
+            "gameState": state,
         }
     # player has chosen to stick
     status = game_instance.dealer_turn()

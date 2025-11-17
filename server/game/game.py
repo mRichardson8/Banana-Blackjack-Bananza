@@ -48,6 +48,7 @@ class Game:
         card = self.deck.pop()
         player.draw_card(card)
         if player.hand_value > 21:
+            # placeholder to be fleshed out after MVP
             return f"Player {player.name} drew {card} and has gone bust."
         return card
 
@@ -62,6 +63,6 @@ class Game:
         dealer_val = self.dealer.hand_value
         if dealer_val > player_val:
             if dealer_val > 21:
-                return "Bust"
-            return "Win"
-        return "Draw"
+                return "player_win"
+            return "dealer_win"
+        return "draw"
