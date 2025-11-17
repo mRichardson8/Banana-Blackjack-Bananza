@@ -3,8 +3,9 @@ Module for the Game class
 """
 
 import random
-from constants import NEW_DECK
-from player import Player
+import secrets
+from game.constants import NEW_DECK
+from game.player import Player
 
 
 class Game:
@@ -14,11 +15,18 @@ class Game:
     """
 
     def __init__(self, name="Player"):
+        self.game_id = secrets.token_urlsafe(6)
         self.bananas = 100
         self.player = Player(name)  # user controller
         self.dealer = Player("Dealer")  # computer controller
-        self.deck = [] # deck of 52 cards
+        self.deck = []  # deck of 52 cards
         self.reset_deck()
+        self.initialise_hands()
+
+    def __str__(self):
+        player = f"{self.player.name}: {self.player.hand_value}, "
+        dealer = f"{self.dealer.name}: {self.dealer.hand_value}"
+        return player + dealer
 
     def reset_deck(self):
         """
@@ -28,19 +36,38 @@ class Game:
         self.deck = NEW_DECK.copy()
         random.shuffle(self.deck)
 
-    def twist(self, player: Player):
+    def initialise_hands(self):
+        """
+        Initialise player and dealer hands at beginning of game.
+        """
+        self.twist(self.player)
+        self.twist(self.player)
+        self.twist(self.dealer)
+        self.twist(self.dealer)
+
+    def twist(self, player: Player) -> str:
         """
         Request another card for the specified Player object
         Initiates bust() if player.hand_value is greater than 21
         """
-        player.draw_card(self.deck.pop())
+        card = self.deck.pop()
+        player.draw_card(card)
         if player.hand_value > 21:
-            # fail state
-            self.bust(player)
+            # placeholder to be fleshed out after MVP
+            return f"Player {player.name} drew {card} and has gone bust."
+        return card
 
-    def bust(self, player: Player):
+    def dealer_turn(self) -> str:
         """
-        Logic for when a player has a hand value of over 21
+        Play out the dealers turn when the player has stuck
+        Returns status string
         """
-        # placeholder
-        print(f"Player {player.name} is out of bananas.")
+        player_val = self.player.hand_value
+        while self.dealer.hand_value < player_val:
+            self.twist(self.dealer)
+        dealer_val = self.dealer.hand_value
+        if dealer_val > player_val:
+            if dealer_val > 21:
+                return "player_win"
+            return "dealer_win"
+        return "draw"
