@@ -21,11 +21,7 @@ class Game:
         self.dealer = Player("Dealer")  # computer controller
         self.deck = []  # deck of 52 cards
         self.reset_deck()
-        # starting cards for players
-        self.twist(self.player)
-        self.twist(self.player)
-        self.twist(self.dealer)
-        self.twist(self.dealer)
+        self.initialise_hands()
 
     def __str__(self):
         player = f"{self.player.name}: {self.player.hand_value}, "
@@ -39,6 +35,15 @@ class Game:
         # take a copy so NEW_DECK is preserved
         self.deck = NEW_DECK.copy()
         random.shuffle(self.deck)
+
+    def initialise_hands(self):
+        """
+        Initialise player and dealer hands at beginning of game.
+        """
+        self.twist(self.player)
+        self.twist(self.player)
+        self.twist(self.dealer)
+        self.twist(self.dealer)
 
     def twist(self, player: Player) -> str:
         """

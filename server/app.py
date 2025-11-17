@@ -3,7 +3,7 @@ Main module for flask application
 """
 
 import secrets
-from flask import Flask, session
+from flask import Flask
 from game.routes import game
 
 app = Flask(__name__)
