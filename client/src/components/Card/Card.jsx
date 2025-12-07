@@ -1,27 +1,19 @@
-import React, { useCallback, useRef, useState } from "react";
-import cardBack from "../../assets/cardback.png";
-import cardBack2 from "../../assets/cards/2_of_clubs.png";
+import { useCallback, useRef } from "react";
+import cardBack2 from "../../../public/assets/cardback.png";
+import { getCardImage } from "../../pages/Game/getCardImage";
 import "./Card.css";
 
 const Card = ({ value, width, height }) => {
   // convert value to the correct png
   const getCardValue = useCallback(() => {
-    return cardBack;
+    // return cardBack;
+    return getCardImage(value)
   }, [value]);
+
   const ref = useRef(null);
-  const [rotated, setRotated] = useState(false);
-  const onClick = () => {
-    if (rotated) {
-      setRotated(false);
-      ref.current.style.transform = "rotateY(0)";
-    } else {
-      setRotated(true);
-      ref.current.style.transform = "rotateY(180deg)";
-    }
-  };
 
   return (
-    <div className="card-outer" onClick={() => onClick()}>
+    <div className="card-outer" id={value}>
       <div className="card-inner" ref={ref}>
         <div className="card-front">
           <img

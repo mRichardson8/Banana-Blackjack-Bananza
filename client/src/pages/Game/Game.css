@@ -3,6 +3,7 @@
   width: 100%;
   background-color: transparent;
   background-color: #4e6a54;
+  overflow: hidden;
   /* background: url('../../assets/banana-bg-g.png') repeat 0 0;
     background-size: 350px;
     animation: animated 75.0s infinite linear;
@@ -18,11 +19,9 @@
     align-items: center;
 
     > * {
-      width: 50px;
-      width: 33%;
+      width: 23%;
       min-height: 50px;
-      margin: 0 10%;
-      min-width: 200px;
+      margin: 0 5%;
     }
 
     .player-hand,
@@ -31,6 +30,23 @@
     .player-actions {
       border: 1px solid yellow;
       background-color: #35493a;
+
+      button{
+        background-color: #4e6a54;
+        margin:4px;
+        color: #DDDDDD;
+        border: 1px solid yellow;
+        border-radius: 8px;
+
+        &:disabled{
+          color: gray;
+          background-color: #35493a;
+        }
+
+        &:hover{
+          transform: scale(1.1);
+        }
+      }
     }
 
     .discard-pile,
@@ -68,7 +84,7 @@
 
   .results-modal{
     width: 100vw;
-    height: 100vh;
+    height: 80vh;
     background-color: #BBBBBB55;
     display: flex;
     justify-content: center;

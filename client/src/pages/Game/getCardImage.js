@@ -1,14 +1,14 @@
 const cardValues = {
   "X": "ace",
-  "2": "two",
-  "3": "three",
-  "4": "four",
-  "5": "five",
-  "6": "six",
-  "7": "seven",
-  "8": "eight",
-  "9": "nine",
-  "10": "ten",
+  "2": "2",
+  "3": "3",
+  "4": "4",
+  "5": "5",
+  "6": "6",
+  "7": "7",
+  "8": "8",
+  "9": "9",
+  "10": "10",
   "J": "jack",
   "Q": "queen",
   "K": "king",
@@ -28,5 +28,5 @@ export const getCardImage = (value) => {
    */
   const cardValue = cardValues[value.substring(1)];
   const cardSuit = cardSuits[value.substring(0, 1)];
-  return `${cardValue}_of_${cardSuit}.png`
+  return `assets/cards/${cardValue}_of_${cardSuit}.png`
 }

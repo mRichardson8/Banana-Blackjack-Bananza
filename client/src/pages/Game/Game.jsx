@@ -1,112 +1,239 @@
-/**
- * Component used to display the game window and allow the user to play the game
- */
-
-import React, { useEffect, useState } from "react";
-import cardBack from "../../assets/cardback.png";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Explosion from "react-canvas-confetti/dist/presets/explosion";
+import cardBack from "../../../public/assets/cardback.png";
 import Card from "../../components/Card/Card";
 import Layout from "../../components/Layout/Layout";
 // import { playerAction, startGame } from "./apiEndpoints";
-import { mockPlayerAction as playerAction, mockStartGame as startGame } from "./apiEndpoints"; // Mock the api for now
+import gsap from "gsap";
+import AdminPanel from "../../components/AdminPanel/AdminPanel";
+import useWindowDimensions from "../../hooks/useWindowDimenions";
+import {
+  mockPlayerAction as playerAction,
+  mockStartGame as startGame,
+} from "./apiEndpoints"; // Mock the api for now
 import "./Game.css";
 
 const Game = () => {
   const [gameID, setGameID] = useState("");
-  const [gameState, setGameState] = useState("");
+  const [gameState, setGameState] = useState("idle");
   const [playerHand, setPlayerHand] = useState({
     cards: [],
-    value: 0
+    value: 0,
   });
   const [dealerHand, setDealerHand] = useState({
     cards: [],
-    value: 0
+    value: 0,
   });
-  const [handValue, setHandValue] = useState(0);
+  const [deck, setDeck] = useState(52);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false)
-  const [modalType, setModalType] = useState("")
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const { height, width } = useWindowDimensions();
+  const deckRef = useRef(null);
+  const discardRef = useRef(null);
+  const [adminDisplay, setAdminDisplay] = useState(true);
 
+  const addCard = useCallback(
+    (newCard) => {
+      setPlayerHand(prevHand => ({
+        cards: [...prevHand.cards, newCard],
+        value: prevHand.value + 1,
+      }));
+    },
+    []
+  );
 
-  const playerHit = async () => {
-    const {gameState, newCard} = await playerAction("hit", gameID)
-    console.log(`new card is ${newCard}`);
-    addCard(newCard)
-    setGameState(gameState)
-  }
+  const animateDraw = useCallback(async (card) => {
+    // Without any timeout, this will animate the final card before the new one is added
+    console.log("anim called with@ ", card)
+    let query = ".player-hand .card-outer:last-child .card-inner";
+    if (card) query = `.player-hand .card-outer#${card} .card-inner`;
+    setTimeout(() => {
+      // Get position of the new card
+      const { x: cardX, y: cardY } = document
+        .querySelector(query)
+        .getBoundingClientRect();
+      // Get position of the deck
+      const { x: deckX, y: deckY } = deckRef.current.getBoundingClientRect();
+      const newX = deckX - cardX;
+      const newY = deckY - cardY;
+      gsap.fromTo(
+        query,
+        { x: newX, y: newY, rotateY: 180 },
+        { x: 0, y: 0, rotateY: 0, visibility: "visible", duration: 1 }
+      );
+    }, 1);
+  }, [])
+
+  const playerHit = useCallback(async () => {
+    const { gameState, newCard } = await playerAction("hit", gameID);
+    addCard(newCard);
+    setGameState(gameState);
+    animateDraw(newCard);
+    setDeck((deck) => deck - 1);
+  }, [addCard, animateDraw, gameID]);
+
+  
 
   const playerStand = async () => {
-    const {gameState, dealerHand} = await playerAction("stand", gameID)
-    console.log("logging returns")
-    console.log(gameState);
-    console.log(dealerHand);
-    // TODO this should be done as an animation one card at a time
+    const { gameState, dealerHand } = await playerAction("stand", gameID);
+    // Wrap setDealerHand in a function which animates cards into the dealers hand
     setDealerHand(dealerHand);
-    if (gameState === 'draw'){
-      displayDraw()
+    if (gameState === "draw") {
+      displayDraw();
     }
-    if (gameState === 'lose'){
-      displayLoss()
+    if (gameState === "lose") {
+      displayLoss();
     }
-    if (gameState === 'win'){
-      displayWin()
+    if (gameState === "win") {
+      displayWin();
     }
-  }
-
-  const addCard = (newCard) => {
-    // TODO add animation logic for the new card
-    setPlayerHand({cards: [...playerHand.cards, newCard], value: playerHand.value + 1});
+    // send cards to discard
+    discardHand();
   };
 
-  const emptyHand = () => {
-    setPlayerHand([]);
-  };
+  const emptyHand = useCallback(() => {
+    for (let i = 1; i <= playerHand.cards.length; i++) {
+      const newX =
+        (Math.random() < 0.5 ? -1 : 1) * (Math.random() * width + width);
+      const newY =
+        (Math.random() < 0.5 ? -1 : 1) * (Math.random() * height + height);
+      gsap.fromTo(
+        `.player-hand .card-outer:nth-child(${i})`,
+        { x: 0, y: 0 },
+        {
+          x: newX,
+          y: newY,
+          rotateY: 0,
+          visibility: "visible",
+          duration: 0.75,
+          delay: i * 0.1,
+        }
+      );
+    }
+    const totalDelay = playerHand.cards.length * 100;
+    setTimeout(() => setPlayerHand({ cards: [], value: 0 }), totalDelay + 100);
+  }, [height, playerHand.cards?.length, width]);
+
+  const discardHand = useCallback(() => {
+    const { x: deckX, y: deckY } = discardRef.current.getBoundingClientRect();
+    for (let i = 1; i <= playerHand.cards.length; i++) {
+      // Get position of the new card
+      const { x: cardX, y: cardY } = document
+        .querySelector(
+          `.player-hand .card-outer:nth-child(${i}) .card-inner img`
+        )
+        .getBoundingClientRect();
+      // Get position of the deck
+      const newX = deckX - cardX;
+      const newY = deckY - cardY;
+      gsap.fromTo(
+        `.player-hand .card-outer:nth-child(${i}) .card-inner`,
+        { x: 0, y: 0, rotateY: 0, visibility: "visible" },
+        { x: newX, y: newY, rotateY: 180, visibility: "visible", duration: 2 }
+      );
+    }
+    // const totalDelay = 1000 + playerHand.cards.length * 200;
+    setTimeout(() => setPlayerHand({ cards: [], value: 0 }), 1750);
+  }, [playerHand.cards?.length]);
 
   // Mock some values idk
   useEffect(() => {
-    setPlayerHand({cards: ["S5", "D7"], value: 17});
-    setDealerHand({cards: ["?", "?"], value: '?'});
+    setDealerHand({ cards: ["?", "?"], value: "?" });
   }, []);
+
+  // change player hand value when hand changes
+  useEffect(() => {
+    console.log(playerHand)
+    setPlayerHand((prevHand) => ({
+      ...prevHand,
+      value: prevHand.cards?.reduce(
+        (acc, card) => acc + parseInt(card.substr(1)),
+        0
+      ),
+    }));
+  }, [playerHand.cards]);
 
   // On page load, one time get data
   useEffect(() => {
     const onPageLoad = async () => {
-      const { newGameID } = startGame();
-      setGameID(newGameID);
+      setPlayerHand({
+        value: 0,
+        cards: []
+      });
+      const { gameID, playerHand, dealerHand } = await startGame();
+      setGameID(gameID);
+      for (const card of playerHand){
+        addCard(card);
+        await animateDraw(card);
+        setTimeout(() => {
+          // Empty body
+        }, 50);
+      }
+      setDealerHand({
+        value: 0,
+        cards: dealerHand
+      })
     };
     onPageLoad();
     setLoading(false);
+  }, [addCard, animateDraw]);
+
+  // Custom display animation for when the player wins
+  const displayWin = useCallback(() => {
+    setShowModal(true);
+    setModalType("win");
   }, []);
 
-  const displayWin = () => {
-    // set anim, banana shaped confetti
-    setShowModal(true)
-    setModalType("win");
-  }
-
+  // Custom display animation for when the player draws (isn't that a loss?)
   const displayDraw = () => {
-    // set anim something funny idk
-    setShowModal(true)
+    setShowModal(true);
     setModalType("draw");
-  }
+  };
 
+  // Custom display animation for when the player loses
   const displayLoss = () => {
-    // set anim banana turning to dust fragmenting? 
     setShowModal(true);
     setModalType("lose");
-  }
+  };
+
+  const fireworkFunc = () => {
+    return <Explosion autorun={{ speed: 2 }} />;
+  };
 
   return (
     <Layout>
+      {adminDisplay && (
+        <AdminPanel
+          setAdminDisplay={setAdminDisplay}
+          buttons={[["empty", emptyHand]]}
+        />
+      )}
       <div id="game-page">
-        {showModal && 
-        <div className="results-modal" onClick={() => setShowModal(false)}>
-          <div className="inner-modal" onClick={(e) => e.stopPropagation()}>
-          {modalType === 'win' && <>You win</>}
-          {modalType === 'lose' && <>You lose</>}
-          {modalType === 'draw' && <>Your chungus ass drew</>}
+        {showModal && (
+          <div className="results-modal" onClick={() => setShowModal(false)}>
+            <div className="inner-modal" onClick={(e) => e.stopPropagation()}>
+              {modalType === "win" && (
+                <>
+                  <p>You win</p>
+                  {fireworkFunc()}
+                </>
+              )}
+              {modalType === "lose" && (
+                <>
+                  <p>You lose</p>
+                  {fireworkFunc()}
+                </>
+              )}
+              {modalType === "draw" && (
+                <>
+                  <p>Your chungus ass drew</p>
+                  {fireworkFunc()}
+                </>
+              )}
+            </div>
           </div>
-        </div>
-        }
+        )}
         {loading ? (
           <div className="loading-screen">
             <p>We're loading y'all</p>
@@ -120,6 +247,7 @@ const Game = () => {
                   src={cardBack}
                   alt="card graphic"
                   style={{ width: "80px" }}
+                  ref={discardRef}
                 />
               </div>
               <div className="dealer-hand">
@@ -130,9 +258,10 @@ const Game = () => {
                 })}
               </div>
               <div className="deck">
-                <p>Deck (56)</p>
+                <p>Deck ({deck})</p>
                 <img
                   src={cardBack}
+                  ref={deckRef}
                   alt="card graphic"
                   style={{ width: "80px" }}
                 />
@@ -148,19 +277,20 @@ const Game = () => {
                 <div className="player-hand">
                   {playerHand.cards?.map((card, index) => {
                     return (
-                      <Card
-                        key={`card-${index}`}
-                        value={card}
-                        width={"300px"}
-                      />
+                      <Card key={`card-${index}`} value={card} width={"80px"} />
                     );
                   })}
                 </div>
-                <p>Hand value: {handValue}</p>
+                <p>Hand value: {playerHand.value}</p>
               </div>
               <div className="player-actions">
                 <button onClick={playerHit}>Hit</button>
-                <button onClick={playerStand}>Stand</button>
+                <button
+                  disabled={playerHand.cards?.length === 0 && true}
+                  onClick={playerStand}
+                >
+                  Stand
+                </button>
               </div>
             </section>
           </>
