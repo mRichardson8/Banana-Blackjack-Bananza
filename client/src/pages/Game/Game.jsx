@@ -8,8 +8,8 @@ import gsap from "gsap";
 import AdminPanel from "../../components/AdminPanel/AdminPanel";
 import useWindowDimensions from "../../hooks/useWindowDimenions";
 import {
-  mockPlayerAction as playerAction,
-  mockStartGame as startGame,
+  playerAction,
+  startGame,
 } from "./apiEndpoints"; // Mock the api for now
 import "./Game.css";
 
@@ -32,7 +32,8 @@ const Game = () => {
   const deckRef = useRef(null);
   const discardRef = useRef(null);
   const [adminDisplay, setAdminDisplay] = useState(true);
-
+  const [disableInput, setDisableInput] = useState(true);
+  
   const addCard = useCallback(
     (newCard) => {
       setPlayerHand(prevHand => ({
@@ -43,11 +44,29 @@ const Game = () => {
     []
   );
 
+  const disablePlayerInput = useCallback((timeout) => {
+    // Disable the player buttons for 1 second or a given timeout
+    setDisableInput(true);
+    setTimeout(() => {
+      setDisableInput(false);
+    }, timeout ?? 1000)
+  }, []);
+
+  const getCardValue = useCallback((value, acc) => {
+    if (value === 'X'){
+      if (acc < 11) return 11;
+      return 1
+    }
+    if (isNaN(parseInt(value))) return 10;
+    return parseInt(value)
+  }, []);
+
+
   const animateDraw = useCallback(async (card) => {
     // Without any timeout, this will animate the final card before the new one is added
-    console.log("anim called with@ ", card)
+    disablePlayerInput();
     let query = ".player-hand .card-outer:last-child .card-inner";
-    if (card) query = `.player-hand .card-outer#${card} .card-inner`;
+    if (card) query = `.player-hand .card-outer#card-${card} .card-inner`;
     setTimeout(() => {
       // Get position of the new card
       const { x: cardX, y: cardY } = document
@@ -60,18 +79,12 @@ const Game = () => {
       gsap.fromTo(
         query,
         { x: newX, y: newY, rotateY: 180 },
-        { x: 0, y: 0, rotateY: 0, visibility: "visible", duration: 1 }
+        { x: 0, y: 0, rotateY: 0, visibility: "visible", duration: 0.01 }
       );
     }, 1);
-  }, [])
+  }, [disablePlayerInput]);
 
-  const playerHit = useCallback(async () => {
-    const { gameState, newCard } = await playerAction("hit", gameID);
-    addCard(newCard);
-    setGameState(gameState);
-    animateDraw(newCard);
-    setDeck((deck) => deck - 1);
-  }, [addCard, animateDraw, gameID]);
+  
 
   
 
@@ -79,13 +92,14 @@ const Game = () => {
     const { gameState, dealerHand } = await playerAction("stand", gameID);
     // Wrap setDealerHand in a function which animates cards into the dealers hand
     setDealerHand(dealerHand);
+    disablePlayerInput();
     if (gameState === "draw") {
       displayDraw();
     }
-    if (gameState === "lose") {
+    if (gameState === "dealer_win") {
       displayLoss();
     }
-    if (gameState === "win") {
+    if (gameState === "player_win") {
       displayWin();
     }
     // send cards to discard
@@ -137,6 +151,20 @@ const Game = () => {
     setTimeout(() => setPlayerHand({ cards: [], value: 0 }), 1750);
   }, [playerHand.cards?.length]);
 
+  const playerHit = useCallback(async () => {
+    const { gameState, playerHand } = await playerAction("twist", gameID);
+    const cardToAdd = Array.from(playerHand.cards).at(-1);
+    console.log("matt: ", gameState);
+    addCard(cardToAdd); 
+    animateDraw(cardToAdd);
+    setGameState(gameState);
+    setDeck((deck) => deck - 1);
+    if (gameState === "player_bust"){
+      displayLoss();
+      discardHand();
+    }
+  }, [addCard, animateDraw, discardHand, gameID]);
+
   // Mock some values idk
   useEffect(() => {
     setDealerHand({ cards: ["?", "?"], value: "?" });
@@ -144,19 +172,19 @@ const Game = () => {
 
   // change player hand value when hand changes
   useEffect(() => {
-    console.log(playerHand)
     setPlayerHand((prevHand) => ({
       ...prevHand,
       value: prevHand.cards?.reduce(
-        (acc, card) => acc + parseInt(card.substr(1)),
+        (acc, card) => acc + getCardValue(card.slice(0, -1), acc),
         0
       ),
     }));
-  }, [playerHand.cards]);
+  }, [getCardValue, playerHand.cards]);
 
   // On page load, one time get data
   useEffect(() => {
     const onPageLoad = async () => {
+      disablePlayerInput();
       setPlayerHand({
         value: 0,
         cards: []
@@ -222,13 +250,13 @@ const Game = () => {
               {modalType === "lose" && (
                 <>
                   <p>You lose</p>
-                  {fireworkFunc()}
+                  {/* {fireworkFunc()} */}
                 </>
               )}
               {modalType === "draw" && (
                 <>
                   <p>Your chungus ass drew</p>
-                  {fireworkFunc()}
+                  {/* {fireworkFunc()} */}
                 </>
               )}
             </div>
@@ -284,9 +312,9 @@ const Game = () => {
                 <p>Hand value: {playerHand.value}</p>
               </div>
               <div className="player-actions">
-                <button onClick={playerHit}>Hit</button>
+                <button onClick={playerHit} disabled={disableInput}>Hit</button>
                 <button
-                  disabled={playerHand.cards?.length === 0 && true}
+                  disabled={(playerHand.cards?.length === 0 && true) || disableInput}
                   onClick={playerStand}
                 >
                   Stand
