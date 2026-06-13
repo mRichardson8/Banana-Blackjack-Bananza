@@ -2,7 +2,7 @@ import { useCallback, useRef } from "react";
 import { getCardImage } from "../../pages/Game/getCardImage";
 import "./Card.css";
 
-const Card = ({ value, width, height }) => {
+const Card = ({ value, width, height, hidden=""}) => {
   // convert value to the correct png
   const getCardValue = useCallback(() => {
     // return cardBack;
@@ -12,9 +12,18 @@ const Card = ({ value, width, height }) => {
   const ref = useRef(null);
 
   return (
-    <div className="card-outer" id={`card-${value}`}>
+    <div className={"card-outer"} id={`card-${value}`}>
       <div className="card-inner" ref={ref}>
-        <div className="card-front">
+        {hidden ? <>
+          <div className="card">
+          <img
+            src={"/assets/cardback.png"}
+            alt="card graphic"
+            style={{ width: width, height: height }}
+          />
+          </div>
+        </> : <>
+          <div className="card-front">
           <img
             src={getCardValue()}
             alt="card graphic"
@@ -28,6 +37,8 @@ const Card = ({ value, width, height }) => {
             style={{ width: width, height: height }}
           />
         </div>
+        </>
+      }
       </div>
     </div>
   );

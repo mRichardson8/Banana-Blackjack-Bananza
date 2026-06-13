@@ -31,8 +31,8 @@ const Game = () => {
   const { height, width } = useWindowDimensions();
   const deckRef = useRef(null);
   const discardRef = useRef(null);
-  const [adminDisplay, setAdminDisplay] = useState(true);
   const [disableInput, setDisableInput] = useState(true);
+  const [showDealerHand, setShowDealerHand] = useState(false);
   
   const addCard = useCallback(
     (newCard) => {
@@ -43,6 +43,7 @@ const Game = () => {
     },
     []
   );
+
 
   const disablePlayerInput = useCallback((timeout) => {
     // Disable the player buttons for 1 second or a given timeout
@@ -60,7 +61,6 @@ const Game = () => {
     if (isNaN(parseInt(value))) return 10;
     return parseInt(value)
   }, []);
-
 
   const animateDraw = useCallback(async (card) => {
     // Without any timeout, this will animate the final card before the new one is added
@@ -85,9 +85,6 @@ const Game = () => {
   }, [disablePlayerInput]);
 
   
-
-  
-
   const playerStand = async () => {
     const { gameState, dealerHand } = await playerAction("stand", gameID);
     // Wrap setDealerHand in a function which animates cards into the dealers hand
@@ -103,6 +100,7 @@ const Game = () => {
       displayWin();
     }
     // send cards to discard
+    setShowDealerHand(true);
     discardHand();
   };
 
@@ -150,6 +148,16 @@ const Game = () => {
     // const totalDelay = 1000 + playerHand.cards.length * 200;
     setTimeout(() => setPlayerHand({ cards: [], value: 0 }), 1750);
   }, [playerHand.cards?.length]);
+
+  // const displayDealerhand = useCallback( async() => {
+  //   for (const card of dealerHand){
+  //       addCard(card);
+  //       await animateDraw(card);
+  //       setTimeout(() => {
+  //         // Empty body
+  //       }, 50);
+  //     }
+  // }, []);
 
   const playerHit = useCallback(async () => {
     const { gameState, playerHand } = await playerAction("twist", gameID);
@@ -205,7 +213,7 @@ const Game = () => {
     };
     onPageLoad();
     setLoading(false);
-  }, [addCard, animateDraw]);
+  }, [addCard, animateDraw, disablePlayerInput]);
 
   // Custom display animation for when the player wins
   const displayWin = useCallback(() => {
@@ -229,22 +237,19 @@ const Game = () => {
     return <Explosion autorun={{ speed: 2 }} />;
   };
 
+
   return (
     <Layout>
-      {adminDisplay && (
-        <AdminPanel
-          setAdminDisplay={setAdminDisplay}
-          buttons={[["empty", emptyHand]]}
-        />
-      )}
       <div id="game-page">
         {showModal && (
           <div className="results-modal" onClick={() => setShowModal(false)}>
             <div className="inner-modal" onClick={(e) => e.stopPropagation()}>
+            <p>Dealer value: {dealerHand.value}</p>
+            <p>Player value: {playerHand.value}</p>
               {modalType === "win" && (
                 <>
                   <p>You win</p>
-                  {fireworkFunc()}
+                  {/* {fireworkFunc()} */}
                 </>
               )}
               {modalType === "lose" && (
@@ -255,10 +260,11 @@ const Game = () => {
               )}
               {modalType === "draw" && (
                 <>
-                  <p>Your chungus ass drew</p>
+                  <p>You drew</p>
                   {/* {fireworkFunc()} */}
                 </>
               )}
+              <button onClick={() => {console.log("placeholder")}}>Play again?</button>
             </div>
           </div>
         )}
@@ -281,7 +287,7 @@ const Game = () => {
               <div className="dealer-hand">
                 {dealerHand.cards?.map((card, index) => {
                   return (
-                    <Card key={`card-${index}`} value={card} width={"300px"} />
+                    <Card key={`card-${index}`} value={card} width={"80px"} hidden={!showDealerHand}/>
                   );
                 })}
               </div>
@@ -298,7 +304,7 @@ const Game = () => {
             <section className="player-half">
               <div className="bet-amount">
                 <p style={{ margin: 0, textAlign: "center" }}>
-                  I 'bet' something is supposed to be here
+                  I <i>'bet'</i> something is supposed to be here
                 </p>
               </div>
               <div className="player-hand-container">

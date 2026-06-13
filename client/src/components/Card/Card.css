@@ -4,7 +4,6 @@ div.card-outer {
   height: 100px;
   display: flex;
   transform-origin: center;
-  visibility: hidden;
 
   &:hover {
     transform: scale(1.2);

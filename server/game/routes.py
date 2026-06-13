@@ -2,7 +2,7 @@
 endpoints and behaviour for the game module
 """
 
-from flask import Blueprint, jsonify, make_response, request, session
+from flask import Blueprint, jsonify, request, session
 from flask_cors import cross_origin
 import jsonpickle
 from game.game import Game
