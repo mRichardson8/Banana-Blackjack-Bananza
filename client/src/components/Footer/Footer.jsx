@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer>
       <p>© {year} Banana Blackjack Bananza Boys inc. All Rights Reserved</p>
-      <p className="hidden">This is a licensed Mad Dog Richardson & CJ Doyle Product</p>
+      <p className="hidden">This is a licensed Mad Dog Richardson & Coffee Junkie Doyle Product</p>
     </footer>
   );
 };
