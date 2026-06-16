@@ -1,0 +1,35 @@
+.admin-panel{
+    display: flex;
+    flex-flow: column nowrap;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 200px;
+    height: 200px;
+    z-index: 100000;
+    background-color: #146b62DD;
+    border: 1px solid #0d443fFF;
+
+    button.minimise{
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: green;
+
+    }
+
+    .button-box{
+        margin:1rem;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+
+        > * {
+            background-color: red;
+            border: 1px solid blue;
+            width: 75%;
+            padding: 0.4rem 0;
+            margin: 0.2rem 0;
+        }
+    }
+}

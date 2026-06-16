@@ -1,0 +1,28 @@
+div.page-content {
+  height: 80%;
+  background: url("/assets/banana-bg-g.png") repeat 0 0;
+  background-color: #4e6a542c;
+  background-size: 150px;
+  animation: animated 100s infinite linear;
+  -webkit-animation-direction: alternate;
+  padding: 0 10%;
+  position: relative;
+}
+
+@keyframes animated {
+  0% {
+    background-position: -5000px 0;
+  }
+  25% {
+    background-position: 0 5000px;
+  }
+  50% {
+    background-position: 5000px 0;
+  }
+  75% {
+    background-position: 0 -5000px;
+  }
+  100% {
+    background-position: -5000px 0px;
+  }
+}
