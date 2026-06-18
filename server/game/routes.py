@@ -28,22 +28,6 @@ def game_start():
     )
 
 
-@game.route("/status", methods=["GET"])
-@cross_origin(supports_credentials=True)
-def game_status():
-    """
-    instantiate game object when new game is launched
-    """
-    # get game object stored in session
-    game_instance = jsonpickle.decode(session.get("game"))
-    return jsonify(
-        {
-            "playerHand": game_instance.player.hand,
-            "dealerHand": game_instance.dealer.hand,
-        }
-    )
-
-
 @game.route("/player-action", methods=["POST"])
 def player_action():
     """
