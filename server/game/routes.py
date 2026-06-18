@@ -20,12 +20,10 @@ def game_start():
     game_instance = Game(request.json["playerName"])
     # for mvp session handles game object persistance
     session["game"] = jsonpickle.encode(game_instance)
-    return jsonify(
-        {
+    return {
             "gameId": game_instance.game_id,
             "playerHand": game_instance.player.hand,
         }
-    )
 
 
 @game.route("/player-action", methods=["POST"])
