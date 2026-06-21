@@ -2,9 +2,10 @@
 endpoints and behaviour for the game module
 """
 
+import jsonpickle
 from flask import Blueprint, jsonify, request, session
 from flask_cors import cross_origin
-import jsonpickle
+
 from game.game import Game
 
 game = Blueprint("game", __name__, url_prefix="/")
@@ -19,21 +20,10 @@ def game_start():
     game_instance = Game(request.json["playerName"])
     # for mvp session handles game object persistance
     session["game"] = jsonpickle.encode(game_instance)
-    return game_instance.game_id
-
-
-@game.route("/status", methods=["GET"])
-@cross_origin(supports_credentials=True)
-def game_status():
-    """
-    instantiate game object when new game is launched
-    """
-    # get game object stored in session
-    game_instance = jsonpickle.decode(session.get("game"))
-    return jsonify({
-        'playerHand': game_instance.player.hand,
-        'dealerHand': game_instance.dealer.hand
-    })
+    return {
+            "gameId": game_instance.game_id,
+            "playerHand": game_instance.player.hand,
+        }
 
 
 @game.route("/player-action", methods=["POST"])
