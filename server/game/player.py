@@ -47,3 +47,9 @@ class Player:
         if value == "X":
             return 1 if running_value + 11 > 21 else 11
         return int(value)
+    
+    def clear_hand(self):
+        """
+        Empty the Player hand
+        """
+        self.hand = []

@@ -71,3 +71,12 @@ class Game:
                 return "player_win"
             return "dealer_win"
         return "draw"
+    
+    def new_round(self):
+        """
+        Empty Player and Dealer hands and draw new hands
+        to begin a new round.
+        """
+        self.player.clear_hand()
+        self.dealer.clear_hand()
+        self.initialise_hands()
