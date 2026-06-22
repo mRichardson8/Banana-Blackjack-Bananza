@@ -1,5 +1,5 @@
 """
-endpoints and behaviour for the game module
+Endpoints and behaviour for the game module.
 """
 
 import jsonpickle
@@ -14,25 +14,25 @@ game = Blueprint("game", __name__, url_prefix="/")
 @game.route("/start", methods=["POST"])
 def game_start():
     """
-    instantiate game object when new game is launched
+    Instantiate game object when new game is launched.
     """
     # instantiate game object
     game_instance = Game(request.json["playerName"])
     # for mvp session handles game object persistance
     session["game"] = jsonpickle.encode(game_instance)
     return {
-            "gameId": game_instance.game_id,
-            "playerHand": {
-                "cards": game_instance.player.hand,
-                "value": game_instance.player.hand_value,
-            },
-        }
+        "gameId": game_instance.game_id,
+        "playerHand": {
+            "cards": game_instance.player.hand,
+            "value": game_instance.player.hand_value,
+        },
+    }
 
 
 @game.route("/player-action", methods=["POST"])
 def player_action():
     """
-    defines behaviour when player either sticks or twists in a game
+    Defines behaviour when player either sticks or twists in a game.
     """
     # get game object stored in session
     game_instance = jsonpickle.decode(session.get("game"))
@@ -69,8 +69,8 @@ def new_round():
     game_instance = jsonpickle.decode(session.get("game"))
     game_instance.new_round()
     return {
-            "playerHand": {
-                "cards": game_instance.player.hand,
-                "value": game_instance.player.hand_value,
-            }
+        "playerHand": {
+            "cards": game_instance.player.hand,
+            "value": game_instance.player.hand_value,
+        }
     }

@@ -1,5 +1,5 @@
 """
-Module for player class
+Module for player class.
 """
 
 
@@ -7,7 +7,7 @@ class Player:
     """
     Class to represent a 'player' in the BlackJack game
     Separate instances are used to respond to input from
-    the user and to determine the behaviour of the dealer
+    the user and to determine the behaviour of the dealer.
     """
 
     def __init__(self, name: str):
@@ -18,14 +18,14 @@ class Player:
         """
         Draw a card from the deck, card format is <value><suit>
         e.g. XS = Ace of Spades, 8H = Eight of Hearts
-        Add card to hand and increment hand value
+        Add card to hand and increment hand value.
         """
         self.hand += [card]
 
     @property
     def hand_value(self) -> int:
         """
-        Returns the int value of the current hand
+        Returns the int value of the current hand.
         """
         total_value = 0
         # create local copy of hand to preserve order of cards
@@ -40,16 +40,16 @@ class Player:
         """
         Parse string value and return as int for given card
         running_value represents the hand_value at the point of
-        card_value() execution in a hand_value() loop
+        card_value() execution in a hand_value() loop.
         """
         if value in ["J", "Q", "K"]:
             return 10
         if value == "X":
             return 1 if running_value + 11 > 21 else 11
         return int(value)
-    
+
     def clear_hand(self):
         """
-        Empty the Player hand
+        Empty the Player hand.
         """
         self.hand = []

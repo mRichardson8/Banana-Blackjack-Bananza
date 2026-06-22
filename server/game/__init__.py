@@ -1,3 +1,3 @@
 """
-The game package handles the gameplay logic
+The game package handles the gameplay logic.
 """
