@@ -22,7 +22,10 @@ def game_start():
     session["game"] = jsonpickle.encode(game_instance)
     return {
             "gameId": game_instance.game_id,
-            "playerHand": game_instance.player.hand,
+            "playerHand": {
+                "cards": game_instance.player.hand,
+                "value": game_instance.player.hand_value,
+            },
         }
 
 
@@ -54,4 +57,20 @@ def player_action():
             "value": game_instance.dealer.hand_value,
         },
         "gameState": status,
+    }
+
+
+@game.route("/new-round", methods=["GET"])
+def new_round():
+    """
+    Reset Player and Dealer hands and redraw cards to start a new round.
+    """
+    # get game object stored in session
+    game_instance = jsonpickle.decode(session.get("game"))
+    game_instance.new_round()
+    return {
+            "playerHand": {
+                "cards": game_instance.player.hand,
+                "value": game_instance.player.hand_value,
+            }
     }
