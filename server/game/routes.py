@@ -68,6 +68,7 @@ def new_round():
     # get game object stored in session
     game_instance = jsonpickle.decode(session.get("game"))
     game_instance.new_round()
+    session["game"] = jsonpickle.encode(game_instance)
     return {
         "playerHand": {
             "cards": game_instance.player.hand,
