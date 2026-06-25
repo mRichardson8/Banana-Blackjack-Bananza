@@ -80,3 +80,14 @@ class Game:
         self.player.clear_hand()
         self.dealer.clear_hand()
         self.initialise_hands()
+
+    def refresh_deck(self):
+        """
+        When the deck is emptied create a new
+        shuffled deck with all non-active cards.
+        """
+        self.reset_deck()
+        # remove active cards
+        for card in self.deck:
+            if card in self.player.hand or card in self.dealer.hand:
+                self.deck.remove(card)
