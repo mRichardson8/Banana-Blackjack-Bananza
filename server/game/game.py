@@ -1,5 +1,5 @@
 """
-Module for the Game class
+Module for the Game class.
 """
 
 import random
@@ -10,8 +10,8 @@ from game.player import Player
 
 class Game:
     """
-    One object of type Game should exist per user session
-    The object represents the ongoing game and all relevant logic
+    One object of type Game should exist per user session.
+    The object represents the ongoing game and all relevant logic.
     """
 
     def __init__(self, name="Player"):
@@ -30,7 +30,7 @@ class Game:
 
     def reset_deck(self):
         """
-        Play a little game of 52-card pickup and shuffle the complete deck
+        Play a little game of 52-card pickup and shuffle the complete deck.
         """
         # take a copy so NEW_DECK is preserved
         self.deck = NEW_DECK.copy()
@@ -48,7 +48,7 @@ class Game:
     def twist(self, player: Player) -> str:
         """
         Request another card for the specified Player object
-        Initiates bust() if player.hand_value is greater than 21
+        Initiates bust() if player.hand_value is greater than 21.
         """
         card = self.deck.pop()
         player.draw_card(card)
@@ -60,7 +60,7 @@ class Game:
     def dealer_turn(self) -> str:
         """
         Play out the dealers turn when the player has stuck
-        Returns status string
+        Returns status string.
         """
         player_val = self.player.hand_value
         while self.dealer.hand_value < player_val:
@@ -71,3 +71,12 @@ class Game:
                 return "player_win"
             return "dealer_win"
         return "draw"
+
+    def new_round(self):
+        """
+        Empty Player and Dealer hands and draw new hands
+        to begin a new round.
+        """
+        self.player.clear_hand()
+        self.dealer.clear_hand()
+        self.initialise_hands()
