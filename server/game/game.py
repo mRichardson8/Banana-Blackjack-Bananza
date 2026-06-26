@@ -52,6 +52,9 @@ class Game:
         """
         card = self.deck.pop()
         player.draw_card(card)
+        # check if deck is empty and needs refreshing
+        if not self.deck:
+            self.refresh_deck()
         if player.hand_value > 21:
             # placeholder to be fleshed out after MVP
             return f"Player {player.name} drew {card} and has gone bust."
