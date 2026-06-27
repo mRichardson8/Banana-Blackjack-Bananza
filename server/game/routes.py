@@ -19,7 +19,7 @@ def game_start():
     # instantiate game object
     game_instance = Game(request.json["playerName"])
     # for mvp session handles game object persistance
-    session["game"] = jsonpickle.encode(game_instance)
+    session["game"] = jsonpickle.encode(game_instance, keys=True)
     return {
         "gameId": game_instance.game_id,
         "playerHand": {
@@ -39,7 +39,7 @@ def player_action():
     if request.json["playerAction"] == "twist":
         new_card = game_instance.twist(game_instance.player)
         state = "player_bust" if len(new_card) > 2 else "player_twist"
-        session["game"] = jsonpickle.encode(game_instance)
+        session["game"] = jsonpickle.encode(game_instance, keys=True)
         return {
             "newCard": new_card,
             "playerHand": {
@@ -50,7 +50,7 @@ def player_action():
         }
     # player has chosen to stick
     status = game_instance.dealer_turn()
-    session["game"] = jsonpickle.encode(game_instance)
+    session["game"] = jsonpickle.encode(game_instance, keys=True)
     return {
         "dealerHand": {
             "cards": game_instance.dealer.hand,
@@ -68,7 +68,7 @@ def new_round():
     # get game object stored in session
     game_instance = jsonpickle.decode(session.get("game"))
     game_instance.new_round()
-    session["game"] = jsonpickle.encode(game_instance)
+    session["game"] = jsonpickle.encode(game_instance, keys=True)
     return {
         "playerHand": {
             "cards": game_instance.player.hand,
