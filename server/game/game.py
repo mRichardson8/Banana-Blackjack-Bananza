@@ -52,6 +52,9 @@ class Game:
         """
         card = self.deck.pop()
         player.draw_card(card)
+        # check if deck is empty and needs refreshing
+        if not self.deck:
+            self.refresh_deck()
         if player.hand_value > 21:
             # placeholder to be fleshed out after MVP
             return f"Player {player.name} drew {card} and has gone bust."
@@ -80,3 +83,14 @@ class Game:
         self.player.clear_hand()
         self.dealer.clear_hand()
         self.initialise_hands()
+
+    def refresh_deck(self):
+        """
+        When the deck is emptied create a new
+        shuffled deck with all non-active cards.
+        """
+        self.reset_deck()
+        # remove active cards
+        for card in self.deck:
+            if card in self.player.hand or card in self.dealer.hand:
+                self.deck.remove(card)
