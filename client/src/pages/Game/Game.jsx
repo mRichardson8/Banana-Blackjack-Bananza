@@ -1,21 +1,15 @@
+import gsap from "gsap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Explosion from "react-canvas-confetti/dist/presets/explosion";
 import cardBack from "../../../public/assets/cardback.png";
 import Card from "../../components/Card/Card";
 import Layout from "../../components/Layout/Layout";
-// import { playerAction, startGame } from "./apiEndpoints";
-import gsap from "gsap";
-import AdminPanel from "../../components/AdminPanel/AdminPanel";
 import useWindowDimensions from "../../hooks/useWindowDimenions";
-import {
-  playerAction,
-  startGame,
-} from "./apiEndpoints"; // Mock the api for now
+import { playerAction, startGame } from "./apiEndpoints";
 import "./Game.css";
 
 const Game = () => {
   const [gameID, setGameID] = useState("");
-  const [gameState, setGameState] = useState("idle");
   const [playerHand, setPlayerHand] = useState({
     cards: [],
     value: 0,
@@ -34,16 +28,15 @@ const Game = () => {
   const [disableInput, setDisableInput] = useState(true);
   const [showDealerHand, setShowDealerHand] = useState(false);
   
-  const addCard = useCallback(
-    (newCard) => {
-      setPlayerHand(prevHand => ({
-        cards: [...prevHand.cards, newCard],
-        value: prevHand.value + 1,
+  const updateHand = useCallback(
+    (newHand) => {
+      setPlayerHand(() => ({
+        cards: newHand.cards,
+        value: newHand.value,
       }));
     },
     []
   );
-
 
   const disablePlayerInput = useCallback((timeout) => {
     // Disable the player buttons for 1 second or a given timeout
@@ -162,32 +155,21 @@ const Game = () => {
   const playerHit = useCallback(async () => {
     const { gameState, playerHand } = await playerAction("twist", gameID);
     const cardToAdd = Array.from(playerHand.cards).at(-1);
-    console.log("matt: ", gameState);
-    addCard(cardToAdd); 
+    updateHand(playerHand); 
     animateDraw(cardToAdd);
-    setGameState(gameState);
     setDeck((deck) => deck - 1);
     if (gameState === "player_bust"){
+      setShowDealerHand(true)
       displayLoss();
+      // TODO we need to see the dealer's hand here.
       discardHand();
     }
-  }, [addCard, animateDraw, discardHand, gameID]);
+  }, [updateHand, animateDraw, discardHand, gameID]);
 
   // Mock some values idk
   useEffect(() => {
     setDealerHand({ cards: ["?", "?"], value: "?" });
   }, []);
-
-  // change player hand value when hand changes
-  useEffect(() => {
-    setPlayerHand((prevHand) => ({
-      ...prevHand,
-      value: prevHand.cards?.reduce(
-        (acc, card) => acc + getCardValue(card.slice(0, -1), acc),
-        0
-      ),
-    }));
-  }, [getCardValue, playerHand.cards]);
 
   // On page load, one time get data
   useEffect(() => {
@@ -197,23 +179,24 @@ const Game = () => {
         value: 0,
         cards: []
       });
-      const { gameID, playerHand, dealerHand } = await startGame();
+      // TODO playerHand should be showing the value here as well
+      const { gameID, playerHand } = await startGame();
       setGameID(gameID);
+      updateHand({cards: playerHand, value: 0});
       for (const card of playerHand){
-        addCard(card);
         await animateDraw(card);
         setTimeout(() => {
-          // Empty body
+          // Empty body to help animation issues
         }, 50);
       }
       setDealerHand({
         value: 0,
-        cards: dealerHand
+        cards: ['?', '?']
       })
     };
     onPageLoad();
     setLoading(false);
-  }, [addCard, animateDraw, disablePlayerInput]);
+  }, [updateHand, animateDraw, disablePlayerInput]);
 
   // Custom display animation for when the player wins
   const displayWin = useCallback(() => {

@@ -26,6 +26,7 @@ export const getCardImage = (value) => {
   /**
    * Maps the string value of a card to the correct image to display for that card
    */
+  if (value === '?') return `/assets/cardback.png`
   const cardValue = cardValues[value.slice(0, -1)];
   const cardSuit = cardSuits[value.slice(-1)];
   return `/assets/cards/${cardValue}_of_${cardSuit}.png`
