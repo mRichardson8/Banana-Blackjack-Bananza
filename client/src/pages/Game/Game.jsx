@@ -133,10 +133,9 @@ const Game = () => {
         value: 0,
         cards: []
       });
-      // TODO playerHand should be showing the value here as well
       const { gameID, playerHand } = await startGame();
       setGameID(gameID);
-      updateHand({cards: playerHand, value: 0});
+      updateHand({cards: playerHand.cards, value: playerHand.value});
       for (const card of playerHand){
         await animateDraw(card);
         setTimeout(() => {
@@ -231,7 +230,7 @@ const Game = () => {
                     );
                   })}
                 </div>
-                {/* <p>Hand value: {playerHand.value}</p> */}
+                <p>Hand value: {playerHand.value}</p>
               </div>
               <div className="player-actions">
                 <button onClick={playerHit} disabled={disableInput}>Hit</button>
