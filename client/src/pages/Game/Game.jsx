@@ -136,7 +136,7 @@ const Game = () => {
       const { gameID, playerHand } = await startGame();
       setGameID(gameID);
       updateHand({cards: playerHand.cards, value: playerHand.value});
-      for (const card of playerHand){
+      for (const card of playerHand.cards){
         await animateDraw(card);
         setTimeout(() => {
           // Empty body to help animation issues
