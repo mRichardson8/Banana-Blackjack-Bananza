@@ -1,9 +1,9 @@
 """
-Constant values for use in the game package
+Constant values for use in the game package.
 """
 
-# NEW_DECK represents a standard 52-card deck the format is <value><suit>
-# X represents Ace for the purposes of sorting in Player.hand_value()
+# NEW_DECK represents a standard 52-card deck the format is <value><suit>.
+# X represents Ace for the purposes of sorting in Player.hand_value().
 
 NEW_DECK = [
     "XC",
