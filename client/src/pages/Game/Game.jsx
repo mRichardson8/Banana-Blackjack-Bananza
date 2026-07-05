@@ -1,21 +1,14 @@
+import gsap from "gsap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Explosion from "react-canvas-confetti/dist/presets/explosion";
 import cardBack from "../../../public/assets/cardback.png";
 import Card from "../../components/Card/Card";
 import Layout from "../../components/Layout/Layout";
-// import { playerAction, startGame } from "./apiEndpoints";
-import gsap from "gsap";
-import AdminPanel from "../../components/AdminPanel/AdminPanel";
-import useWindowDimensions from "../../hooks/useWindowDimenions";
-import {
-  playerAction,
-  startGame,
-} from "./apiEndpoints"; // Mock the api for now
+import { playerAction, startGame } from "./apiEndpoints";
 import "./Game.css";
 
 const Game = () => {
   const [gameID, setGameID] = useState("");
-  const [gameState, setGameState] = useState("idle");
   const [playerHand, setPlayerHand] = useState({
     cards: [],
     value: 0,
@@ -28,38 +21,30 @@ const Game = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState("");
-  const { height, width } = useWindowDimensions();
-  const deckRef = useRef(null);
-  const discardRef = useRef(null);
   const [disableInput, setDisableInput] = useState(true);
   const [showDealerHand, setShowDealerHand] = useState(false);
+
+  const deckRef = useRef(null);
+  const discardRef = useRef(null);
   
-  const addCard = useCallback(
-    (newCard) => {
-      setPlayerHand(prevHand => ({
-        cards: [...prevHand.cards, newCard],
-        value: prevHand.value + 1,
+
+  const updateHand = useCallback(
+    // shorthand function to update the state of the hand
+    (newHand) => {
+      setPlayerHand(() => ({
+        cards: newHand.cards,
+        value: newHand.value,
       }));
     },
     []
   );
-
 
   const disablePlayerInput = useCallback((timeout) => {
     // Disable the player buttons for 1 second or a given timeout
     setDisableInput(true);
     setTimeout(() => {
       setDisableInput(false);
-    }, timeout ?? 1000)
-  }, []);
-
-  const getCardValue = useCallback((value, acc) => {
-    if (value === 'X'){
-      if (acc < 11) return 11;
-      return 1
-    }
-    if (isNaN(parseInt(value))) return 10;
-    return parseInt(value)
+    }, timeout ?? 1000);
   }, []);
 
   const animateDraw = useCallback(async (card) => {
@@ -79,53 +64,10 @@ const Game = () => {
       gsap.fromTo(
         query,
         { x: newX, y: newY, rotateY: 180 },
-        { x: 0, y: 0, rotateY: 0, visibility: "visible", duration: 0.01 }
+        { x: 0, y: 0, rotateY: 0, visibility: "visible", duration: 0.75 }
       );
     }, 1);
   }, [disablePlayerInput]);
-
-  
-  const playerStand = async () => {
-    const { gameState, dealerHand } = await playerAction("stand", gameID);
-    // Wrap setDealerHand in a function which animates cards into the dealers hand
-    setDealerHand(dealerHand);
-    disablePlayerInput();
-    if (gameState === "draw") {
-      displayDraw();
-    }
-    if (gameState === "dealer_win") {
-      displayLoss();
-    }
-    if (gameState === "player_win") {
-      displayWin();
-    }
-    // send cards to discard
-    setShowDealerHand(true);
-    discardHand();
-  };
-
-  const emptyHand = useCallback(() => {
-    for (let i = 1; i <= playerHand.cards.length; i++) {
-      const newX =
-        (Math.random() < 0.5 ? -1 : 1) * (Math.random() * width + width);
-      const newY =
-        (Math.random() < 0.5 ? -1 : 1) * (Math.random() * height + height);
-      gsap.fromTo(
-        `.player-hand .card-outer:nth-child(${i})`,
-        { x: 0, y: 0 },
-        {
-          x: newX,
-          y: newY,
-          rotateY: 0,
-          visibility: "visible",
-          duration: 0.75,
-          delay: i * 0.1,
-        }
-      );
-    }
-    const totalDelay = playerHand.cards.length * 100;
-    setTimeout(() => setPlayerHand({ cards: [], value: 0 }), totalDelay + 100);
-  }, [height, playerHand.cards?.length, width]);
 
   const discardHand = useCallback(() => {
     const { x: deckX, y: deckY } = discardRef.current.getBoundingClientRect();
@@ -141,55 +83,49 @@ const Game = () => {
       const newY = deckY - cardY;
       gsap.fromTo(
         `.player-hand .card-outer:nth-child(${i}) .card-inner`,
-        { x: 0, y: 0, rotateY: 0, visibility: "visible" },
-        { x: newX, y: newY, rotateY: 180, visibility: "visible", duration: 2 }
+        { x: 0, y: 0, rotateY: 0 },
+        { x: newX, y: newY, rotateY: 180, duration: 1.75 }
       );
     }
     // const totalDelay = 1000 + playerHand.cards.length * 200;
     setTimeout(() => setPlayerHand({ cards: [], value: 0 }), 1750);
   }, [playerHand.cards?.length]);
 
-  // const displayDealerhand = useCallback( async() => {
-  //   for (const card of dealerHand){
-  //       addCard(card);
-  //       await animateDraw(card);
-  //       setTimeout(() => {
-  //         // Empty body
-  //       }, 50);
-  //     }
-  // }, []);
+  const playerStand = useCallback(async () => {
+    const { gameState, dealerHand } = await playerAction("stand", gameID);
+    // Wrap setDealerHand in a function which animates cards into the dealers hand
+    setDealerHand(dealerHand);
+    disablePlayerInput();
+    if (gameState === "draw") {
+      setModalType("draw");
+    }
+    if (gameState === "dealer_win") {
+      setModalType("lose");
+    }
+    if (gameState === "player_win") {
+      setModalType("win");
+    }
+    setShowModal(true)
+    // send cards to discard
+    setShowDealerHand(true);
+    discardHand();
+  }, [disablePlayerInput, discardHand, gameID]);
 
   const playerHit = useCallback(async () => {
     const { gameState, playerHand } = await playerAction("twist", gameID);
     const cardToAdd = Array.from(playerHand.cards).at(-1);
-    console.log("matt: ", gameState);
-    addCard(cardToAdd); 
+    updateHand(playerHand); 
     animateDraw(cardToAdd);
-    setGameState(gameState);
     setDeck((deck) => deck - 1);
     if (gameState === "player_bust"){
-      displayLoss();
+      setShowDealerHand(true)
+      setModalType("lose")
+      setShowModal(true);
       discardHand();
     }
-  }, [addCard, animateDraw, discardHand, gameID]);
+  }, [updateHand, animateDraw, discardHand, gameID]);
 
-  // Mock some values idk
-  useEffect(() => {
-    setDealerHand({ cards: ["?", "?"], value: "?" });
-  }, []);
-
-  // change player hand value when hand changes
-  useEffect(() => {
-    setPlayerHand((prevHand) => ({
-      ...prevHand,
-      value: prevHand.cards?.reduce(
-        (acc, card) => acc + getCardValue(card.slice(0, -1), acc),
-        0
-      ),
-    }));
-  }, [getCardValue, playerHand.cards]);
-
-  // On page load, one time get data
+  // On page load, get initial data for the game
   useEffect(() => {
     const onPageLoad = async () => {
       disablePlayerInput();
@@ -197,46 +133,27 @@ const Game = () => {
         value: 0,
         cards: []
       });
-      const { gameID, playerHand, dealerHand } = await startGame();
+      const { gameID, playerHand } = await startGame();
       setGameID(gameID);
-      for (const card of playerHand){
-        addCard(card);
+      updateHand({cards: playerHand.cards, value: playerHand.value});
+      for (const card of playerHand.cards){
         await animateDraw(card);
         setTimeout(() => {
-          // Empty body
+          // Empty body to help animation issues
         }, 50);
       }
       setDealerHand({
         value: 0,
-        cards: dealerHand
+        cards: ['?', '?']
       })
     };
     onPageLoad();
     setLoading(false);
-  }, [addCard, animateDraw, disablePlayerInput]);
-
-  // Custom display animation for when the player wins
-  const displayWin = useCallback(() => {
-    setShowModal(true);
-    setModalType("win");
-  }, []);
-
-  // Custom display animation for when the player draws (isn't that a loss?)
-  const displayDraw = () => {
-    setShowModal(true);
-    setModalType("draw");
-  };
-
-  // Custom display animation for when the player loses
-  const displayLoss = () => {
-    setShowModal(true);
-    setModalType("lose");
-  };
+  }, [updateHand, animateDraw, disablePlayerInput]);
 
   const fireworkFunc = () => {
     return <Explosion autorun={{ speed: 2 }} />;
   };
-
 
   return (
     <Layout>
@@ -249,19 +166,17 @@ const Game = () => {
               {modalType === "win" && (
                 <>
                   <p>You win</p>
-                  {/* {fireworkFunc()} */}
+                  {fireworkFunc()}
                 </>
               )}
               {modalType === "lose" && (
                 <>
                   <p>You lose</p>
-                  {/* {fireworkFunc()} */}
                 </>
               )}
               {modalType === "draw" && (
                 <>
                   <p>You drew</p>
-                  {/* {fireworkFunc()} */}
                 </>
               )}
               <button onClick={() => {console.log("placeholder")}}>Play again?</button>
