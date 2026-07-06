@@ -1,7 +1,6 @@
 import gsap from "gsap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Explosion from "react-canvas-confetti/dist/presets/explosion";
-import cardBack from "../../../public/assets/cardback.png";
 import Card from "../../components/Card/Card";
 import Layout from "../../components/Layout/Layout";
 import { playerAction, startGame } from "./apiEndpoints";
@@ -69,9 +68,9 @@ const Game = () => {
     }, 1);
   }, [disablePlayerInput]);
 
-  const discardHand = useCallback(() => {
+  const discardHand = useCallback((cards) => {
     const { x: deckX, y: deckY } = discardRef.current.getBoundingClientRect();
-    for (let i = 1; i <= playerHand.cards.length; i++) {
+    for (let i = 1; i <= cards.length; i++) {
       // Get position of the new card
       const { x: cardX, y: cardY } = document
         .querySelector(
@@ -88,8 +87,7 @@ const Game = () => {
       );
     }
     // const totalDelay = 1000 + playerHand.cards.length * 200;
-    setTimeout(() => setPlayerHand({ cards: [], value: 0 }), 1750);
-  }, [playerHand.cards?.length]);
+  }, []);
 
   const playerStand = useCallback(async () => {
     const { gameState, dealerHand } = await playerAction("stand", gameID);
@@ -108,20 +106,21 @@ const Game = () => {
     setShowModal(true)
     // send cards to discard
     setShowDealerHand(true);
-    discardHand();
-  }, [disablePlayerInput, discardHand, gameID]);
+    discardHand(playerHand.cards);
+  }, [disablePlayerInput, discardHand, gameID, playerHand.cards]);
 
   const playerHit = useCallback(async () => {
     const { gameState, playerHand } = await playerAction("twist", gameID);
     const cardToAdd = Array.from(playerHand.cards).at(-1);
     updateHand(playerHand); 
     animateDraw(cardToAdd);
+    await new Promise(resolve => setTimeout(resolve, 1000));
     setDeck((deck) => deck - 1);
     if (gameState === "player_bust"){
-      setShowDealerHand(true)
-      setModalType("lose")
+      setShowDealerHand(true);
+      setModalType("lose");
       setShowModal(true);
-      discardHand();
+      discardHand(playerHand.cards);
     }
   }, [updateHand, animateDraw, discardHand, gameID]);
 
@@ -193,7 +192,7 @@ const Game = () => {
               <div className="discard-pile">
                 <p>Discard (48)</p>
                 <img
-                  src={cardBack}
+                  src='/assets/cardback.png'
                   alt="card graphic"
                   style={{ width: "80px" }}
                   ref={discardRef}
@@ -209,7 +208,7 @@ const Game = () => {
               <div className="deck">
                 <p>Deck ({deck})</p>
                 <img
-                  src={cardBack}
+                  src='/assets/cardback.png'
                   ref={deckRef}
                   alt="card graphic"
                   style={{ width: "80px" }}
