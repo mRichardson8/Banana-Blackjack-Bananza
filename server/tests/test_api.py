@@ -1,5 +1,7 @@
 """
 Test file for the API routes.
+Due to the random nature of the underlying logic make sure
+to run tests several times after making changes.
 """
 
 import pytest
@@ -70,3 +72,24 @@ def test_player_action_stick(client):
     # the value of the hand is greater than 0
     assert response.json["dealerHand"]["value"] > 0
     assert response.json["gameState"] in ["player_win", "dealer_win", "draw"]
+
+def test_new_round(client):
+    """Test the new game route."""
+    client.post(
+        '/start',
+        json={"playerName": "Peter Parker"},
+        headers={'Content-type':'application/json'},
+    )
+    # grab a card so not at starting position - slightly more realistic
+    client.post(
+        '/player-action',
+        json={"playerAction": "twist"},
+        headers={'Content-type':'application/json'},
+    )
+    response = client.get('/new-round')
+    assert response.status_code == 200
+    # playerHand is as it should be if /start were called
+    assert len(response.json["playerHand"]["cards"]) == 2
+    assert response.json["playerHand"]["cards"][0] 
+    assert response.json["playerHand"]["cards"][1]
+    assert response.json["playerHand"]["value"] > 0
