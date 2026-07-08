@@ -35,7 +35,7 @@ def player_action():
     Defines behaviour when player either sticks or twists in a game.
     """
     # get game object stored in session
-    game_instance = jsonpickle.decode(session.get("game"))
+    game_instance = jsonpickle.decode(session.get("game"), keys=True)
     if request.json["playerAction"] == "twist":
         new_card = game_instance.twist(game_instance.player)
         state = "player_bust" if len(new_card) > 2 else "player_twist"
@@ -66,7 +66,7 @@ def new_round():
     Reset Player and Dealer hands and redraw cards to start a new round.
     """
     # get game object stored in session
-    game_instance = jsonpickle.decode(session.get("game"))
+    game_instance = jsonpickle.decode(session.get("game"), keys=True)
     game_instance.new_round()
     session["game"] = jsonpickle.encode(game_instance, keys=True)
     return {
