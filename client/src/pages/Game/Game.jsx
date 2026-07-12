@@ -1,8 +1,6 @@
 import gsap from "gsap";
 import { useCallback, useEffect, useRef, useState } from "react";
-import Explosion from "react-canvas-confetti/dist/presets/explosion";
-import Card from "../../components/Card/Card";
-import Layout from "../../components/Layout/Layout";
+import { Card, Layout, Modal } from "../../components";
 import { playerAction, startGame } from "./apiEndpoints";
 import "./Game.css";
 
@@ -104,7 +102,6 @@ const Game = () => {
       setModalType("win");
     }
     setShowModal(true)
-    // send cards to discard
     setShowDealerHand(true);
     discardHand(playerHand.cards);
   }, [disablePlayerInput, discardHand, gameID, playerHand.cards]);
@@ -118,7 +115,7 @@ const Game = () => {
     setDeck((deck) => deck - 1);
     if (gameState === "player_bust"){
       setShowDealerHand(true);
-      setModalType("lose");
+      setModalType("bust");
       setShowModal(true);
       discardHand(playerHand.cards);
     }
@@ -150,37 +147,11 @@ const Game = () => {
     setLoading(false);
   }, [updateHand, animateDraw, disablePlayerInput]);
 
-  const fireworkFunc = () => {
-    return <Explosion autorun={{ speed: 2 }} />;
-  };
-
   return (
     <Layout>
       <div id="game-page">
         {showModal && (
-          <div className="results-modal" onClick={() => setShowModal(false)}>
-            <div className="inner-modal" onClick={(e) => e.stopPropagation()}>
-            <p>Dealer value: {dealerHand.value}</p>
-            <p>Player value: {playerHand.value}</p>
-              {modalType === "win" && (
-                <>
-                  <p>You win</p>
-                  {fireworkFunc()}
-                </>
-              )}
-              {modalType === "lose" && (
-                <>
-                  <p>You lose</p>
-                </>
-              )}
-              {modalType === "draw" && (
-                <>
-                  <p>You drew</p>
-                </>
-              )}
-              <button onClick={() => {console.log("placeholder")}}>Play again?</button>
-            </div>
-          </div>
+          <Modal dealerHand={dealerHand} playerHand={playerHand} modalType={modalType} setShowModal={setShowModal} />
         )}
         {loading ? (
           <div className="loading-screen">

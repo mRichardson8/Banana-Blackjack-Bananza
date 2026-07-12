@@ -1,0 +1,123 @@
+.results-modal{
+    width: 100vw;
+    height: 80vh;
+    background-color: #3b3b3bd3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 1s;
+
+    &.show{
+        opacity: 1;
+    }
+
+    .inner-modal{
+        width: 35%;
+        height: 65%;
+        background-color: #688d70;
+        border: 8px double #2c3b2f;
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        border-radius: 24px;
+        z-index: 50;
+
+        button{
+            margin: auto;
+            font-size: 1.25rem;
+            background-color: #4e6a54;
+            padding: 12px;
+            color: #DDDDDD;
+            border: 1px solid yellow;
+            border-radius: 8px;
+            
+
+            &:hover{
+                scale: 1.05;
+                border: 1px solid orange;
+            }
+        }
+        
+        h1{
+            color: #E93429;
+            text-shadow: 2px 2px 1px #D5BB0B;
+            height: 35%;
+            display: flex;
+            align-items: center;
+
+            &.win{
+                animation: modal-win 2s infinite linear;
+            }
+
+            &.lose{
+                animation: modal-lose 2s 1 linear;
+                animation-delay: 0.25s;
+            }
+        }
+
+        div.hand-results{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+
+            > div {
+                width: 50%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    }
+}
+
+@keyframes modal-win {
+    0% {
+        transform: scale(1) rotateZ(0deg);
+    }
+    25% {
+        transform: scale(1.2) rotateZ(2deg);
+    }
+    50% {
+        transform: scale(1.0) rotateZ(0);
+    }
+    75% {
+        transform: scale(1.2) rotateZ(-2deg);
+    }
+    100% {
+        transform: scale(1) rotateZ(0deg);
+    }
+}
+
+@keyframes modal-lose {
+    0% {
+        transform: scale(1);
+        color: #E93429;
+        text-shadow: 2px 2px 1px #D5BB0B;
+    }
+    35% {
+        transform: scale(1.25);
+        opacity: 0.5;
+    }
+    75% {
+        transform: scale(1.5);
+        opacity: 0;
+        color: darkgray;
+        text-shadow: none;
+    }
+    90%{
+        transform: scale(2);
+        opacity: 0
+    }
+    91%{
+        transform: scale(1)
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1
+    }
+}

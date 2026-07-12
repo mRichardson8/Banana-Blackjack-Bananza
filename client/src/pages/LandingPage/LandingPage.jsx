@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
-import Layout from "../../components/Layout/Layout";
 import "./LandingPage.css";
 import { useNavigate } from "react-router";
+import { Layout } from "../../components";
 
 const LandingPage = () => {
   const navigate = useNavigate();
