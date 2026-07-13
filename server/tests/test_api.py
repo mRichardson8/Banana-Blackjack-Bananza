@@ -15,14 +15,25 @@ def setup_client():
     with app.test_client() as client:
         yield client
 
+def _start_game(client, player_name):
+    """POST the start route with the given player name."""
+    return client.post(
+        "/start",
+        json={"playerName": player_name},
+        headers={"Content-type": "application/json"},
+    )
+
+def _player_action(client, action):
+    """Given the string 'stick' or 'twist' POST player action."""
+    return client.post(
+        "/player-action",
+        json={"playerAction": action},
+        headers={"Content-type": "application/json"},
+    )
 
 def test_start(client):
     """Test the start route."""
-    response = client.post(
-        "/start",
-        json={"playerName": "Tobias Fünke"},
-        headers={"Content-type": "application/json"},
-    )
+    response = _start_game(client, "Tobias Fünke")
     assert response.status_code == 200
     assert len(response.json["gameId"]) == 6
     # the hand has two cards
@@ -36,16 +47,8 @@ def test_start(client):
 
 def test_player_action_twist(client):
     """Test the player action route with the twist action."""
-    client.post(
-        "/start",
-        json={"playerName": "Dr Leo Spaceman"},
-        headers={"Content-type": "application/json"},
-    )
-    response = client.post(
-        "/player-action",
-        json={"playerAction": "twist"},
-        headers={"Content-type": "application/json"},
-    )
+    _start_game(client, "Dr Leo Spaceman")
+    response = _player_action(client, "twist")
     assert response.status_code == 200
     # new card is not missing
     assert response.json["newCard"]
@@ -61,16 +64,8 @@ def test_player_action_twist(client):
 
 def test_player_action_stick(client):
     """Test the player action route with the twist action."""
-    client.post(
-        "/start",
-        json={"playerName": "Player McPlayface"},
-        headers={"Content-type": "application/json"},
-    )
-    response = client.post(
-        "/player-action",
-        json={"playerAction": "stick"},
-        headers={"Content-type": "application/json"},
-    )
+    _start_game(client, "Player McPlayface")
+    response = _player_action(client, "stick")
     assert response.status_code == 200
     # correct number of cards in returned hand
     assert len(response.json["dealerHand"]["cards"]) >= 2
@@ -81,17 +76,9 @@ def test_player_action_stick(client):
 
 def test_new_round(client):
     """Test the new game route."""
-    client.post(
-        "/start",
-        json={"playerName": "Peter Parker"},
-        headers={"Content-type": "application/json"},
-    )
+    response = _start_game(client, "Peter Parker")
     # grab a card so not at starting position - slightly more realistic
-    client.post(
-        "/player-action",
-        json={"playerAction": "twist"},
-        headers={"Content-type": "application/json"},
-    )
+    _player_action(client, "twist")
     response = client.get("/new-round")
     assert response.status_code == 200
     # playerHand is as it should be if /start were called
