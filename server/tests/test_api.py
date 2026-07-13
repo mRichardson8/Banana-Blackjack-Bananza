@@ -36,12 +36,9 @@ def test_start(client):
     response = _start_game(client, "Tobias Fünke")
     assert response.status_code == 200
     assert len(response.json["gameId"]) == 6
-    # the hand has two cards
     assert len(response.json["playerHand"]["cards"]) == 2
-    # the cards are not empty strings
     assert response.json["playerHand"]["cards"][0]
     assert response.json["playerHand"]["cards"][1]
-    # the value of the hand is greater than 0
     assert response.json["playerHand"]["value"] > 0
 
 
@@ -50,14 +47,11 @@ def test_player_action_twist(client):
     _start_game(client, "Dr Leo Spaceman")
     response = _player_action(client, "twist")
     assert response.status_code == 200
-    # new card is not missing
     assert response.json["newCard"]
-    # correct number of cards in returned hand
     assert len(response.json["playerHand"]["cards"]) == 3
     # new card is last card in hand
     # checking if in newCard to handle special string that is returned for bust
     assert response.json["playerHand"]["cards"][-1] in response.json["newCard"]
-    # the value of the hand is greater than 0
     assert response.json["playerHand"]["value"] > 0
     assert response.json["gameState"] in ["player_twist", "player_bust"]
 
@@ -67,9 +61,7 @@ def test_player_action_stick(client):
     _start_game(client, "Player McPlayface")
     response = _player_action(client, "stick")
     assert response.status_code == 200
-    # correct number of cards in returned hand
     assert len(response.json["dealerHand"]["cards"]) >= 2
-    # the value of the hand is greater than 0
     assert response.json["dealerHand"]["value"] > 0
     assert response.json["gameState"] in ["player_win", "dealer_win", "draw"]
 
