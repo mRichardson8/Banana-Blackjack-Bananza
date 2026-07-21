@@ -8,6 +8,8 @@ footer {
   border-top: 1px solid grey;
   text-align: center;
   height: 5%;
+  background-color: #242424;
+  z-index: 100;
 
   .logo {
     height: 6em;

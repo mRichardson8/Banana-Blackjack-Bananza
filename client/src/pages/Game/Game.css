@@ -81,48 +81,6 @@
       color: black;
     }
   }
-
-  .results-modal{
-    width: 100vw;
-    height: 80vh;
-    background-color: #BBBBBB55;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    left: 0;
-  }
-
-  .inner-modal{
-    width: 30%;
-    height: 30%;
-    position: absolute;
-    top: 35%;
-    left: 35%;
-    /* background-color: green; */
-    background-color: #3d3d3d;
-    border: 2px double green;
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 12px;
-
-    button{
-      background-color: #4e6a54;
-      padding: 12px;
-      color: #DDDDDD;
-      border: 1px solid yellow;
-      border-radius: 8px;
-
-      &:hover{
-        scale: 1.05;
-        border: 1px solid orange;
-      }
-    }
-  }
 }
 
 .loading-screen {
