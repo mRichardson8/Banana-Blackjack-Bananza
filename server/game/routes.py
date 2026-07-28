@@ -40,7 +40,7 @@ def player_action():
         new_card = game_instance.twist(game_instance.player)
         state = "player_bust" if len(new_card) > 2 else "player_twist"
         session["game"] = jsonpickle.encode(game_instance, keys=True)
-        return {
+        output_json = {
             "newCard": new_card,
             "playerHand": {
                 "cards": game_instance.player.hand,
@@ -48,6 +48,17 @@ def player_action():
             },
             "gameState": state,
         }
+        # we only want the dealer hand info if the player busts
+        if state == "player_bust":
+            output_json.update(
+                {
+                    "dealerHand": {
+                        "cards": game_instance.dealer.hand,
+                        "value": game_instance.dealer.hand_value,
+                    }
+                }
+            )
+        return output_json
     # player has chosen to stick
     status = game_instance.dealer_turn()
     session["game"] = jsonpickle.encode(game_instance, keys=True)
