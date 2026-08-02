@@ -1,8 +1,9 @@
 import gsap from "gsap";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Card, Layout, Modal } from "../../components";
-import { playerAction, startGame } from "./apiEndpoints";
+import { playerAction, startGame, startNewRound } from "./apiEndpoints";
 import "./Game.css";
+import {cloneDeep} from "lodash"
 
 const Game = () => {
   const [gameID, setGameID] = useState("");
@@ -16,8 +17,12 @@ const Game = () => {
   });
   const [deck, setDeck] = useState(52);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState("");
+  const [showModal, setShowModal] = useState({
+    visible: false,
+    type: "",
+    playerHand: [],
+    dealerHand: [],
+  });
   const [disableInput, setDisableInput] = useState(true);
   const [showDealerHand, setShowDealerHand] = useState(false);
 
@@ -81,10 +86,12 @@ const Game = () => {
       gsap.fromTo(
         `.player-hand .card-outer:nth-child(${i}) .card-inner`,
         { x: 0, y: 0, rotateY: 0 },
-        { x: newX, y: newY, rotateY: 180, duration: 1.75 }
+        { x: newX, y: newY, rotateY: 180, duration: 1.25 }
       );
     }
-    // const totalDelay = 1000 + playerHand.cards.length * 200;
+    setTimeout(() => {
+      setPlayerHand({cards: [], value: 0})
+    }, 1250);
   }, []);
 
   const playerStand = useCallback(async () => {
@@ -92,19 +99,15 @@ const Game = () => {
     // Wrap setDealerHand in a function which animates cards into the dealers hand
     setDealerHand(dealerHand);
     disablePlayerInput();
-    if (gameState === "draw") {
-      setModalType("draw");
-    }
-    if (gameState === "dealer_win") {
-      setModalType("lose");
-    }
-    if (gameState === "player_win") {
-      setModalType("win");
-    }
-    setShowModal(true)
+    setShowModal({
+      visible: true,
+      type: gameState,
+      playerHand: cloneDeep(playerHand),
+      dealerHand: cloneDeep(dealerHand)
+    })
     setShowDealerHand(true);
     discardHand(playerHand.cards);
-  }, [disablePlayerInput, discardHand, gameID, playerHand.cards]);
+  }, [disablePlayerInput, discardHand, gameID, playerHand]);
 
   const playerHit = useCallback(async () => {
     const { gameState, playerHand } = await playerAction("twist", gameID);
@@ -115,11 +118,31 @@ const Game = () => {
     setDeck((deck) => deck - 1);
     if (gameState === "player_bust"){
       setShowDealerHand(true);
-      setModalType("bust");
-      setShowModal(true);
+      setShowModal({
+        visible: true,
+        type: gameState,
+        playerHand: cloneDeep(playerHand),
+    })
       discardHand(playerHand.cards);
     }
   }, [updateHand, animateDraw, discardHand, gameID]);
+
+  const newRound = useCallback(async () => {
+    const newPlayerHand = await startNewRound(gameID);
+    setShowModal({
+      visible: false,
+    })
+    disablePlayerInput();
+    setGameID(gameID);
+    updateHand(newPlayerHand);
+    for (const card of newPlayerHand.cards){
+      await animateDraw(card);
+    }
+    setDealerHand({
+      value: 0,
+      cards: ['?', '?']
+    });
+  }, [animateDraw, disablePlayerInput, gameID, updateHand]);
 
   // On page load, get initial data for the game
   useEffect(() => {
@@ -134,9 +157,6 @@ const Game = () => {
       updateHand({cards: playerHand.cards, value: playerHand.value});
       for (const card of playerHand.cards){
         await animateDraw(card);
-        setTimeout(() => {
-          // Empty body to help animation issues
-        }, 50);
       }
       setDealerHand({
         value: 0,
@@ -150,8 +170,8 @@ const Game = () => {
   return (
     <Layout>
       <div id="game-page">
-        {showModal && (
-          <Modal dealerHand={dealerHand} playerHand={playerHand} modalType={modalType} setShowModal={setShowModal} />
+        {showModal.visible && (
+          <Modal showModal={showModal} newRound={newRound} />
         )}
         {loading ? (
           <div className="loading-screen">

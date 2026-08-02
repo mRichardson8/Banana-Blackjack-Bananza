@@ -35,7 +35,12 @@
             color: #DDDDDD;
             border: 1px solid yellow;
             border-radius: 8px;
-            
+            opacity: 0;
+            transition: opacity 1s;
+
+            &.visible{
+                opacity: 1
+            }
 
             &:hover{
                 scale: 1.05;
@@ -58,6 +63,8 @@
                 animation: modal-lose 2s 1 linear;
                 animation-delay: 0.25s;
             }
+
+            
         }
 
         div.hand-results{
