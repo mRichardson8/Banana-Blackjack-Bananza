@@ -5,11 +5,13 @@ import Snow from "react-canvas-confetti/dist/presets/snow";
 import { getCardImage } from "../../pages/Game/getCardImage";
 import './modal.css';
 
-const Modal = ({dealerHand, playerHand, modalType, setShowModal}) => {
+const Modal = ({showModal, newRound}) => {
     const bananaShape = confetti.shapeFromText({ text: `🍌`});
     const rainShape = confetti.shapeFromText({ text: `💧`});
     const bustedShape = confetti.shapeFromText({ text: `>21`});
-
+    const {playerHand, dealerHand, type: modalType} = showModal;
+    const [modalOpacity, setModalOpacity] = useState(0);
+    const [buttonVisible, setButtonVisible] = useState(false);
     const bananaConfetti = useCallback(() => {
         const decorateOptionsA = (defaultOptions) => {
             return {
@@ -50,29 +52,45 @@ const Modal = ({dealerHand, playerHand, modalType, setShowModal}) => {
     }, [bustedShape]);
 
 
-    const [modalOpacity, setModalOpacity] = useState(0)
-
     useEffect(() => {
         setModalOpacity(1);
     }, [])
 
+    useEffect(() => {
+        if (showModal.visible){
+            setModalOpacity(1);
+            setTimeout(() => {
+                setButtonVisible(true);
+            }, 1250);
+        } else{
+            setModalOpacity(0);
+            setButtonVisible(false)
+        }
+
+    }, [showModal.visible])
+
     const getModalContent = useMemo(() => {
         let text, extraContent, textClass;
         switch(modalType){
-            case "win": 
+            case "player_win": 
                 text = "You Win";
                 extraContent = bananaConfetti();
                 textClass =  "win"
                 break;
-            case "lose":
+            case "dealer_win":
                 text = "You Lose";
                 extraContent = rainConfetti();
                 textClass = "lose"
                 break;
-            case "bust":
+            case "player_bust":
                 text = "You Busted";
                 extraContent = bustedConfetti();
                 textClass = "lose";
+                break;
+            case "draw":
+                text = "You Drew";
+                extraContent = rainConfetti();
+                textClass = "draw";
                 break;
             default:
                 text = "🚨 Something went wrong! 🚨";
@@ -85,6 +103,10 @@ const Modal = ({dealerHand, playerHand, modalType, setShowModal}) => {
         }
     }, [modalType, bananaConfetti, rainConfetti, bustedConfetti]);
 
+    const modalNewRound = useCallback(async () => {
+        await newRound();
+    }, [newRound]);
+    
     return (
         <div className="results-modal" style={{"opacity": modalOpacity}}>
             {getModalContent.extraContent}
@@ -103,7 +125,7 @@ const Modal = ({dealerHand, playerHand, modalType, setShowModal}) => {
                     </div>
                     <p>Your score: {playerHand.value}</p>
                 </div>
-                {modalType !== "bust" && <div className="dealer-results">
+                {modalType !== "player_bust" && <div className="dealer-results">
                     <div className="images">
                         {dealerHand.cards.map(c => {
                             return <img
@@ -117,7 +139,7 @@ const Modal = ({dealerHand, playerHand, modalType, setShowModal}) => {
                 </div>}
             </div>
             
-            <button onClick={() => {window.location.reload()}}>Play again?</button>
+            <button className={"play-again-btn" + (buttonVisible && " visible")} disabled={!buttonVisible} onClick={() => {modalNewRound()}}>Play again?</button>
             </div>
         </div>
   )

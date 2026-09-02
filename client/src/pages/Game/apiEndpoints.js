@@ -15,7 +15,7 @@ export const startGame = async () => {
   const gameIdRes = await instance.post("http://localhost:5000/start", {
     playerName: "player",
   });
-  const {playerHand, gameId} = await gameIdRes.data
+  const {playerHand, gameId} = await gameIdRes.data;
   return {playerHand, gameId};
 };
 
@@ -27,5 +27,13 @@ export const playerAction = async (action, gameID) => {
   })
   return res.data;
 };
+
+export const startNewRound = async (gameID) => {
+  const res = await instance.get("http://localhost:5000/new-round", {
+    gameID: gameID,
+  })
+  const {playerHand} = await res.data;
+  return playerHand;
+}
 
 
