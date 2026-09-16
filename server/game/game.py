@@ -66,14 +66,11 @@ class Game:
         Returns status string.
         """
         player_val = self.player.hand_value
-        while self.dealer.hand_value < player_val:
+        while (dealer_val := self.dealer.hand_value) <= player_val and dealer_val < 21:
             self.twist(self.dealer)
-        dealer_val = self.dealer.hand_value
-        if dealer_val > player_val:
-            if dealer_val > 21:
-                return "player_win"
-            return "dealer_win"
-        return "draw"
+        if dealer_val > 21:
+            return "player_win"
+        return "dealer_win"
 
     def new_round(self):
         """
